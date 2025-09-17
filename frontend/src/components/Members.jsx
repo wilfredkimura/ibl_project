@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Row, Col, Card, Alert } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { Container, Grid, Card, CardMedia, CardContent, Typography, Alert } from "@mui/material";
 
 const Members = () => {
   const [members, setMembers] = useState([]);
@@ -33,47 +33,43 @@ const Members = () => {
   }, []);
 
   return (
-    <Container>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-4"
-      >
-        <h2>YCS Members</h2>
-        <p className="lead">
-          Meet our vibrant Youth Serving Christ community at St. Dominic
-          Catholic Church!
-        </p>
+    <Container maxWidth="lg">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <Typography variant="h4">YCS Members</Typography>
+          <Typography variant="body1" color="text.secondary">
+            Meet our vibrant Youth Serving Christ community at St. Dominic Catholic Church!
+          </Typography>
+        </div>
       </motion.div>
 
       {error && (
-        <Alert variant="danger" className="mb-4">{error}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
       )}
 
       {!error && members.length === 0 && (
-        <div className="mb-4">Loading...</div>
+        <Typography sx={{ mb: 2 }}>Loading...</Typography>
       )}
 
       {members.length > 0 && (
-        <Row>
+        <Grid container spacing={2}>
           {members.map((member) => (
-            <Col md={4} key={member.id} className="mb-4">
+            <Grid item md={4} xs={12} key={member.id}>
               <Card>
-                <Card.Img
-                  variant="top"
-                  src={member.picture_url || "/images/ycs-member-placeholder.png"}
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={member.picture_url || "/images/ycs-member-placeholder.png"}
                   alt={member.name}
-                  style={{ height: "200px", objectFit: "cover" }}
                 />
-                <Card.Body>
-                  <Card.Title>{member.name || "YCS Member"}</Card.Title>
-                  <Card.Text>{member.bio || "A dedicated YCS member."}</Card.Text>
-                </Card.Body>
+                <CardContent>
+                  <Typography variant="h6">{member.name || "YCS Member"}</Typography>
+                  <Typography variant="body2" color="text.secondary">{member.bio || "A dedicated YCS member."}</Typography>
+                </CardContent>
               </Card>
-            </Col>
+            </Grid>
           ))}
-        </Row>
+        </Grid>
       )}
     </Container>
   );

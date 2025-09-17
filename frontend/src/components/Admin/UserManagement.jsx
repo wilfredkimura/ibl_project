@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Alert } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Container,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -42,42 +55,46 @@ const UserManagement = () => {
   };
 
   return (
-    <>
-      {error && (
-        <Alert variant="danger" className="mb-3">
-          {error}
-        </Alert>
-      )}
-      <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Email</th>
-          <th>Admin</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map((user) => (
-          <tr key={user.id}>
-            <td>{user.id}</td>
-            <td>{user.username}</td>
-            <td>{user.email}</td>
-            <td>{user.is_admin ? "Yes" : "No"}</td>
-            <td>
-              <Button variant="info" onClick={() => toggleAdmin(user.id)}>
-                Toggle Admin
-              </Button>{" "}
-              <Button variant="danger" onClick={() => deleteUser(user.id)}>
-                Delete
-              </Button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-      </Table>
-    </>
+    <Container disableGutters>
+      <Stack spacing={2}>
+        {error && (
+          <Alert severity="error">{error}</Alert>
+        )}
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Username</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Admin</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((u) => (
+                <TableRow key={u.id} hover>
+                  <TableCell>{u.id}</TableCell>
+                  <TableCell>{u.username}</TableCell>
+                  <TableCell>{u.email}</TableCell>
+                  <TableCell>{u.is_admin ? "Yes" : "No"}</TableCell>
+                  <TableCell align="right">
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
+                      <Button size="small" variant="outlined" onClick={() => toggleAdmin(u.id)}>
+                        Toggle Admin
+                      </Button>
+                      <Button size="small" color="error" variant="contained" onClick={() => deleteUser(u.id)}>
+                        Delete
+                      </Button>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
+    </Container>
   );
 };
 

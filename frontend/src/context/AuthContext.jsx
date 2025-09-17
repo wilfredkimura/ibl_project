@@ -7,16 +7,25 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const storage = localStorage.getItem("token") ? localStorage : sessionStorage;
+    const token = storage.getItem("token");
+    const userStr = storage.getItem("user");
+    if (token && userStr) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(JSON.parse(localStorage.getItem("user")));
+      setUser(JSON.parse(userStr));
     }
   }, []);
 
-  const login = (token, userData) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
+  const login = (token, userData, remember = true) => {
+    const storage = remember ? localStorage : sessionStorage;
+    // Clear both to avoid stale values
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+
+    storage.setItem("token", token);
+    storage.setItem("user", JSON.stringify(userData));
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUser(userData);
   };
@@ -24,6 +33,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
   };

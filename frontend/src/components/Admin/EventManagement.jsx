@@ -1,7 +1,26 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import {
+  Alert,
+  Button,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Stack,
+} from "@mui/material";
 
 const EventManagement = () => {
   const [events, setEvents] = useState([]);
@@ -75,75 +94,56 @@ const EventManagement = () => {
   };
 
   return (
-    <>
-      {error && (
-        <Alert variant="danger" className="mb-3">{error}</Alert>
-      )}
-      <Button onClick={() => setShowModal(true)} className="mb-3">
-        Add Event
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Future?</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map((event) => (
-            <tr key={event.id}>
-              <td>{event.title}</td>
-              <td>{new Date(event.date).toLocaleDateString()}</td>
-              <td>{event.is_future ? "Yes" : "No"}</td>
-              <td>
-                <Button variant="info" onClick={() => editEvent(event)}>
-                  Edit
-                </Button>{" "}
-                <Button variant="danger" onClick={() => deleteEvent(event.id)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container disableGutters>
+      <Stack spacing={2}>
+        {error && <Alert severity="error">{error}</Alert>}
+        <Button variant="contained" onClick={() => setShowModal(true)}>Add Event</Button>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Future?</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {events.map((event) => (
+                <TableRow key={event.id} hover>
+                  <TableCell>{event.title}</TableCell>
+                  <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{event.is_future ? "Yes" : "No"}</TableCell>
+                  <TableCell align="right">
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
+                      <Button size="small" variant="outlined" onClick={() => editEvent(event)}>Edit</Button>
+                      <Button size="small" color="error" variant="contained" onClick={() => deleteEvent(event.id)}>Delete</Button>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{editing ? "Edit Event" : "Add Event"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" {...register("title")} required />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" {...register("description")} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Date</Form.Label>
-              <Form.Control type="date" {...register("date")} required />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label="Is Future Event"
-                {...register("is_future")}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Picture</Form.Label>
-              <Form.Control type="file" {...register("picture")} />
-            </Form.Group>
-            <Button type="submit">{editing ? "Update" : "Add"}</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </>
+      <Dialog open={showModal} onClose={() => setShowModal(false)} fullWidth maxWidth="sm">
+        <DialogTitle>{editing ? "Edit Event" : "Add Event"}</DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={2} component="form" id="event-form" onSubmit={handleSubmit(onSubmit)}>
+            <TextField label="Title" {...register("title")} required />
+            <TextField label="Description" multiline minRows={3} {...register("description")} />
+            <TextField label="Date" type="date" InputLabelProps={{ shrink: true }} {...register("date")} required />
+            <FormControlLabel control={<Checkbox {...register("is_future")} />} label="Is Future Event" />
+            <TextField type="file" inputProps={{ accept: 'image/*' }} {...register("picture")} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button type="submit" form="event-form" variant="contained">{editing ? "Update" : "Add"}</Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

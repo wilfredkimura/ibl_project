@@ -1,7 +1,25 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import {
+  Alert,
+  Button,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Stack,
+} from "@mui/material";
+import RichTextEditor from "../common/RichTextEditor.jsx";
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
@@ -9,6 +27,7 @@ const BlogManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const { register, handleSubmit, reset } = useForm();
+  const [contentHtml, setContentHtml] = useState("");
 
   useEffect(() => {
     fetchBlogs();
@@ -28,7 +47,11 @@ const BlogManagement = () => {
   const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("content", data.content);
+    if (!contentHtml || contentHtml.replace(/<[^>]*>/g, "").trim().length === 0) {
+      setError("Content is required");
+      return;
+    }
+    formData.append("content", contentHtml);
     if (data.picture[0]) formData.append("picture", data.picture[0]);
 
     try {
@@ -63,72 +86,58 @@ const BlogManagement = () => {
 
   const editBlog = (blog) => {
     setEditing(blog);
-    reset({ title: blog.title, content: blog.content });
+    reset({ title: blog.title });
+    setContentHtml(blog.content || "");
     setShowModal(true);
   };
 
   return (
-    <>
-      {error && (
-        <Alert variant="danger" className="mb-3">{error}</Alert>
-      )}
-      <Button onClick={() => setShowModal(true)} className="mb-3">
-        Add Blog
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blogs.map((blog) => (
-            <tr key={blog.id}>
-              <td>{blog.title}</td>
-              <td>{new Date(blog.date).toLocaleDateString()}</td>
-              <td>
-                <Button variant="info" onClick={() => editBlog(blog)}>
-                  Edit
-                </Button>{" "}
-                <Button variant="danger" onClick={() => deleteBlog(blog.id)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container disableGutters>
+      <Stack spacing={2}>
+        {error && <Alert severity="error">{error}</Alert>}
+        <Button variant="contained" onClick={() => setShowModal(true)}>Add Blog</Button>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {blogs.map((blog) => (
+                <TableRow key={blog.id} hover>
+                  <TableCell>{blog.title}</TableCell>
+                  <TableCell>{new Date(blog.date).toLocaleDateString()}</TableCell>
+                  <TableCell align="right">
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
+                      <Button size="small" variant="outlined" onClick={() => editBlog(blog)}>Edit</Button>
+                      <Button size="small" color="error" variant="contained" onClick={() => deleteBlog(blog.id)}>Delete</Button>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{editing ? "Edit Blog" : "Add Blog"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" {...register("title")} required />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Content</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={5}
-                {...register("content")}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Picture</Form.Label>
-              <Form.Control type="file" {...register("picture")} />
-            </Form.Group>
-            <Button type="submit">{editing ? "Update" : "Add"}</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </>
+      <Dialog open={showModal} onClose={() => setShowModal(false)} fullWidth maxWidth="md">
+        <DialogTitle>{editing ? "Edit Blog" : "Add Blog"}</DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={2} component="form" id="blog-form" onSubmit={handleSubmit(onSubmit)}>
+            <TextField label="Title" {...register("title")} required />
+            <RichTextEditor value={contentHtml} onChange={setContentHtml} />
+            <TextField type="file" inputProps={{ accept: 'image/*' }} {...register("picture")} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button type="submit" form="blog-form" variant="contained">{editing ? "Update" : "Add"}</Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

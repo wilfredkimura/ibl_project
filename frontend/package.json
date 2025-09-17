@@ -11,14 +11,17 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
-    "bootstrap": "^5.3.8",
     "framer-motion": "^12.23.12",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^6.1.8",
+    "@mui/material": "^6.1.8",
     "react": "^19.1.1",
-    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
     "react-lazy-load-image-component": "^1.6.3",
-    "react-router-dom": "^7.9.1"
+    "react-router-dom": "^7.9.1",
+    "swiper": "^11.1.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

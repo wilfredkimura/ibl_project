@@ -1,7 +1,24 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import {
+  Alert,
+  Button,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Stack,
+} from "@mui/material";
 
 const LeaderManagement = () => {
   const [leaders, setLeaders] = useState([]);
@@ -69,69 +86,59 @@ const LeaderManagement = () => {
   };
 
   return (
-    <>
-      {error && (
-        <Alert variant="danger" className="mb-3">{error}</Alert>
-      )}
-      <Button onClick={() => setShowModal(true)} className="mb-3">
-        Add Leader
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaders.map((leader) => (
-            <tr key={leader.id}>
-              <td>{leader.name}</td>
-              <td>{leader.position}</td>
-              <td>
-                <Button variant="info" onClick={() => editLeader(leader)}>
-                  Edit
-                </Button>{" "}
-                <Button
-                  variant="danger"
-                  onClick={() => deleteLeader(leader.id)}
-                >
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container disableGutters>
+      <Stack spacing={2}>
+        {error && <Alert severity="error">{error}</Alert>}
+        <Button variant="contained" onClick={() => setShowModal(true)}>
+          Add Leader
+        </Button>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Position</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {leaders.map((leader) => (
+                <TableRow key={leader.id} hover>
+                  <TableCell>{leader.name}</TableCell>
+                  <TableCell>{leader.position}</TableCell>
+                  <TableCell align="right">
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
+                      <Button size="small" variant="outlined" onClick={() => editLeader(leader)}>
+                        Edit
+                      </Button>
+                      <Button size="small" color="error" variant="contained" onClick={() => deleteLeader(leader.id)}>
+                        Delete
+                      </Button>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{editing ? "Edit Leader" : "Add Leader"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" {...register("name")} required />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Position</Form.Label>
-              <Form.Control type="text" {...register("position")} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Bio</Form.Label>
-              <Form.Control as="textarea" {...register("bio")} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Picture</Form.Label>
-              <Form.Control type="file" {...register("picture")} />
-            </Form.Group>
-            <Button type="submit">{editing ? "Update" : "Add"}</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </>
+      <Dialog open={showModal} onClose={() => setShowModal(false)} fullWidth maxWidth="sm">
+        <DialogTitle>{editing ? "Edit Leader" : "Add Leader"}</DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={2} component="form" id="leader-form" onSubmit={handleSubmit(onSubmit)}>
+            <TextField label="Name" {...register("name")} required />
+            <TextField label="Position" {...register("position")} />
+            <TextField label="Bio" multiline minRows={3} {...register("bio")} />
+            <TextField type="file" inputProps={{ accept: 'image/*' }} {...register("picture")} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button type="submit" form="leader-form" variant="contained">{editing ? "Update" : "Add"}</Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

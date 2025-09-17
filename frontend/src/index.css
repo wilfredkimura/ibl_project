@@ -1,4 +1,19 @@
 /* Minimalist Brown and Beige Theme */
+/* Self-hosted Ubuntu Mono */
+@font-face {
+  font-family: 'Ubuntu Mono';
+  src: url('/fonts/UbuntuMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubuntu Mono';
+  src: url('/fonts/UbuntuMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 :root {
   --ycs-primary: #A0522D; /* Sienna (Medium Brown) */
   --ycs-accent: #8B4513; /* SaddleBrown (Darker Brown) */
@@ -6,6 +21,12 @@
   --ycs-dark: #3D2B1F; /* Dark Brown for footer */
   --ycs-light: #F5F5DC; /* Beige Background */
   --ycs-text: #654321; /* Dark Brown for text */
+}
+
+/* Global background and text */
+body {
+  background-color: var(--ycs-light);
+  color: var(--ycs-text);
 }
 
 /* Navbar - Brown Theme */
@@ -85,6 +106,104 @@ a:hover,
   color: var(--ycs-accent);
 }
 
+/* Tabs - Theme (Bootstrap .nav-tabs) */
+.ycs-tabs.nav-tabs {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.ycs-tabs .nav-link {
+  color: var(--ycs-primary);
+}
+.ycs-tabs .nav-link:hover {
+  color: var(--ycs-accent);
+  border-color: transparent;
+}
+.ycs-tabs .nav-link.active,
+.ycs-tabs .nav-item.show .nav-link {
+  color: var(--ycs-light) !important;
+  background-color: var(--ycs-primary) !important;
+  border-color: var(--ycs-primary) var(--ycs-primary) transparent !important;
+}
+
+/* Tab content surface */
+.ycs-tab-surface {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+/* Tables - Theme */
+.table thead th {
+  background-color: var(--ycs-hover);
+  color: var(--ycs-dark);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(160, 82, 45, 0.06); /* primary @ 6% */
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(139, 69, 19, 0.08); /* accent @ 8% */
+}
+
+/* Modals - Theme */
+.modal-content {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.modal-header {
+  background-color: var(--ycs-light);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.modal-title {
+  color: var(--ycs-text);
+}
+.modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Form Controls - Theme */
+.form-control,
+.form-select {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ycs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(160, 82, 45, 0.25);
+}
+.form-check-input:checked {
+  background-color: var(--ycs-primary);
+  border-color: var(--ycs-primary);
+}
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(160, 82, 45, 0.25);
+  border-color: var(--ycs-primary);
+}
+
+/* Buttons & Links - Hover/Active */
+.btn-primary:active {
+  background-color: var(--ycs-accent) !important;
+  border-color: var(--ycs-accent) !important;
+}
+.btn-secondary:active {
+  background-color: var(--ycs-primary) !important;
+  border-color: var(--ycs-primary) !important;
+}
+.btn-outline-primary {
+  color: var(--ycs-primary) !important;
+  border-color: var(--ycs-primary) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--ycs-primary) !important;
+  color: var(--ycs-light) !important;
+}
+.btn-link {
+  color: var(--ycs-primary) !important;
+}
+.btn-link:hover {
+  color: var(--ycs-accent) !important;
+}
+
 /* Layout */
 html,
 body,
@@ -97,7 +216,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: "Roboto", sans-serif;
+  font-family: "Ubuntu Mono", monospace;
   background-color: var(--ycs-light);
   color: var(--ycs-text);
   line-height: 1.6;
@@ -168,7 +287,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", sans-serif;
+  font-family: "Ubuntu Mono", monospace;
   font-weight: 700;
   color: var(--ycs-primary);
 }
@@ -187,18 +306,16 @@ h6 {
 footer {
   background-color: var(--ycs-dark);
   color: #ffffff;
-  padding: 2rem 0;
+  padding: 20px; /* slightly more top padding for spacing */
   width: 100%;
-  margin-top: auto;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+  margin-top: auto; /* sticks at bottom on short pages */
+  border-top: 1px solid rgba(255, 255, 255, 0.18); /* subtle separation */
 }
 
-footer .container {
-  max-width: 1200px;
-}
+footer .container { max-width: 1200px; }
 
 footer h5 {
-  font-family: "Roboto", sans-serif;
+  font-family: "Ubuntu Mono", monospace;
   font-weight: 700;
   font-size: 1.25rem;
   margin-bottom: 1rem;
@@ -206,7 +323,7 @@ footer h5 {
 }
 
 footer p {
-  font-family: "Roboto", sans-serif;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 0.95rem;
   line-height: 1.6;
   color: #e0e0e0;
@@ -214,7 +331,7 @@ footer p {
 }
 
 footer .nav-link {
-  font-family: "Roboto", sans-serif;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 0.9rem;
   color: #e0e0e0 !important;
   padding: 0.25rem 0;

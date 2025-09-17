@@ -1,10 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { Container, Form, Button, Image, Card, Alert } from "react-bootstrap";
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Alert,
+  Stack,
+  Typography,
+  Avatar,
+} from "@mui/material";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 const Profile = () => {
@@ -80,89 +88,53 @@ const Profile = () => {
   const isOwnProfile = !userId || userId === String(user?.id);
 
   return (
-    <Container>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-4"
-      >
-        <h2>
-          {isOwnProfile
-            ? "Your Profile"
-            : profile?.name
-            ? `${profile.name}'s Profile`
-            : "Member Profile"}
-        </h2>
-        <p className="lead">
-          {isOwnProfile
-            ? "Manage your Youth Serving Christ (YCS) profile at St. Dominic Catholic Church."
-            : "Learn more about this YCS member at St. Dominic Catholic Church, St. Theresa Kalimoni Parish."}
-        </p>
+    <Container maxWidth="sm">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+        <div style={{ textAlign: 'center', marginBottom: 16 }}>
+          <Typography variant="h4">
+            {isOwnProfile ? "Your Profile" : profile?.name ? `${profile.name}'s Profile` : "Member Profile"}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {isOwnProfile
+              ? "Manage your Youth Serving Christ (YCS) profile at St. Dominic Catholic Church."
+              : "Learn more about this YCS member at St. Dominic Catholic Church, St. Theresa Kalimoni Parish."}
+          </Typography>
+        </div>
       </motion.div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
-
-      {!error && !profile && <div>Loading...</div>}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {!error && !profile && <Typography>Loading...</Typography>}
 
       {profile && (
         <>
-          {success && <Alert variant="success">{success}</Alert>}
-          <Card className="mx-auto" style={{ maxWidth: "500px" }}>
-            <Card.Body>
-              <div className="text-center mb-3">
-                <Image
-                  src={profile.picture_url || "/images/ycs-member-placeholder.png"}
-                  roundedCircle
-                  style={{ width: "150px", height: "150px", objectFit: "cover" }}
-                  alt={profile.name}
-                />
-              </div>
-              {editMode && isOwnProfile ? (
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control
-                      {...register("name")}
-                      placeholder="Enter your name"
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Bio</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      {...register("bio")}
-                      placeholder="Tell us about yourself"
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Profile Picture</Form.Label>
-                    <Form.Control
-                      type="file"
-                      {...register("picture")}
-                      accept="image/*"
-                    />
-                  </Form.Group>
-                  <Button variant="primary" type="submit" className="me-2">
-                    Save
-                  </Button>
-                  <Button variant="secondary" onClick={() => setEditMode(false)}>
-                    Cancel
-                  </Button>
-                </Form>
-              ) : (
-                <>
-                  <h4>{profile.name || "YCS Member"}</h4>
-                  <p>{profile.bio || "A dedicated member of our YCS community."}</p>
-                  {isOwnProfile && (
-                    <Button variant="primary" onClick={() => setEditMode(true)}>
-                      Edit Profile
-                    </Button>
-                  )}
-                </>
-              )}
-            </Card.Body>
-          </Card>
+          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+          <Paper sx={{ p: 3, mx: 'auto' }}>
+            <Stack alignItems="center" spacing={2} sx={{ mb: 2 }}>
+              <Avatar src={profile.picture_url || "/images/ycs-member-placeholder.png"} alt={profile.name} sx={{ width: 120, height: 120 }} />
+              <Typography variant="h6">{profile.name || "YCS Member"}</Typography>
+            </Stack>
+            {editMode && isOwnProfile ? (
+              <Stack spacing={2} component="form" onSubmit={handleSubmit(onSubmit)}>
+                <TextField label="Name" {...register("name")} placeholder="Enter your name" />
+                <TextField label="Bio" multiline minRows={3} {...register("bio")} placeholder="Tell us about yourself" />
+                <Button variant="outlined" component="label">
+                  Upload Profile Picture
+                  <input hidden type="file" accept="image/*" {...register("picture")} />
+                </Button>
+                <Stack direction="row" spacing={1} justifyContent="flex-end">
+                  <Button onClick={() => setEditMode(false)}>Cancel</Button>
+                  <Button type="submit" variant="contained">Save</Button>
+                </Stack>
+              </Stack>
+            ) : (
+              <>
+                <Typography variant="body1" sx={{ mb: 2 }}>{profile.bio || "A dedicated member of our YCS community."}</Typography>
+                {isOwnProfile && (
+                  <Button variant="contained" onClick={() => setEditMode(true)}>Edit Profile</Button>
+                )}
+              </>
+            )}
+          </Paper>
         </>
       )}
     </Container>

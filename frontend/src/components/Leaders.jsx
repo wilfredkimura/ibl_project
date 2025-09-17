@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, Row, Col, Container } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { Container, Grid, Card, CardMedia, CardContent, Typography } from "@mui/material";
 
 const Leaders = () => {
   const [leaders, setLeaders] = useState([]);
@@ -11,63 +11,46 @@ const Leaders = () => {
   }, []);
 
   return (
-    <Container>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-4"
-      >
-        <h2>Meet Our YCS Leaders</h2>
-        <p className="lead">
-          Our dedicated Youth Serving Christ (YCS) leaders at St. Dominic
-          Catholic Church, St. Theresa Kalimoni Parish, guide our youth in
-          faith, service, and community, inspiring all to live for Christ.
-        </p>
+    <Container maxWidth="md">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <Typography variant="h4">Meet Our YCS Leaders</Typography>
+          <Typography variant="body1" color="text.secondary">
+            Our dedicated Youth Serving Christ (YCS) leaders at St. Dominic Catholic Church, St. Theresa Kalimoni Parish, guide our youth in faith, service, and community, inspiring all to live for Christ.
+          </Typography>
+        </div>
       </motion.div>
-      <Row>
+      <Grid container spacing={2}>
         {leaders.length === 0 ? (
-          <Col>
-            <p>No leaders to display yet. Check back soon to meet our YCS leaders.</p>
-          </Col>
+          <Grid item xs={12}>
+            <Typography>No leaders to display yet. Check back soon to meet our YCS leaders.</Typography>
+          </Grid>
         ) : (
           leaders.map((leader, index) => (
-            <Col md={4} key={leader.id} className="mb-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="fade-in"
-              >
-              <Card>
-                {leader.picture_url ? (
-                  <Card.Img
-                    variant="top"
-                    src={leader.picture_url}
+            <Grid item md={4} xs={12} key={leader.id}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}>
+                <Card>
+                  <CardMedia
+                    component="img"
+                    sx={{ height: { xs: 140, sm: 200 } }}
+                    image={leader.picture_url || "https://via.placeholder.com/200?text=YCS+Leader"}
                     alt={leader.name}
                   />
-                ) : (
-                  <Card.Img
-                    variant="top"
-                    src="https://via.placeholder.com/200?text=YCS+Leader"
-                    alt="Placeholder"
-                  />
-                )}
-                <Card.Body>
-                  <Card.Title>{leader.name}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">
-                    {leader.position || "YCS Leader"}
-                  </Card.Subtitle>
-                  <Card.Text>
-                    {leader.bio || "Guiding our youth in faith and service."}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
+                  <CardContent>
+                    <Typography variant="h6">{leader.name}</Typography>
+                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                      {leader.position || "YCS Leader"}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {leader.bio || "Guiding our youth in faith and service."}
+                    </Typography>
+                  </CardContent>
+                </Card>
               </motion.div>
-            </Col>
+            </Grid>
           ))
         )}
-      </Row>
+      </Grid>
     </Container>
   );
 };
