@@ -28,10 +28,12 @@ router.post("/register", async (req, res) => {
       [name, email, hashedPassword]
     );
 
-    const token = jwt.sign({ id: newUser.rows[0].id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.json({ token, user: newUser.rows[0] });
+    const token = jwt.sign(
+      { id: newUser.rows[0].id, is_admin: false },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    res.json({ token, user: { ...newUser.rows[0], is_admin: false } });
   } catch (err) {
     console.error("Registration error:", err.stack);
     let errorMessage = "Server Error";
@@ -69,9 +71,11 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user.rows[0].id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user.rows[0].id, is_admin: user.rows[0].is_admin },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
     res.json({
       token,
       user: {

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal } from "react-bootstrap";
+import { Table, Button, Form, Modal, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const { register, handleSubmit, reset } = useForm();
@@ -13,8 +14,15 @@ const BlogManagement = () => {
     fetchBlogs();
   }, []);
 
-  const fetchBlogs = () => {
-    axios.get("/api/blog").then((res) => setBlogs(res.data));
+  const fetchBlogs = async () => {
+    try {
+      const res = await axios.get("/api/blog");
+      setBlogs(res.data);
+      setError("");
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to load blogs";
+      setError(msg);
+    }
   };
 
   const onSubmit = async (data) => {
@@ -38,12 +46,19 @@ const BlogManagement = () => {
       reset();
       setEditing(null);
     } catch (err) {
-      alert("Operation failed");
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Operation failed";
+      setError(msg);
     }
   };
 
-  const deleteBlog = (id) => {
-    axios.delete(`/api/blog/${id}`).then(() => fetchBlogs());
+  const deleteBlog = async (id) => {
+    try {
+      await axios.delete(`/api/blog/${id}`);
+      fetchBlogs();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to delete blog";
+      setError(msg);
+    }
   };
 
   const editBlog = (blog) => {
@@ -54,6 +69,9 @@ const BlogManagement = () => {
 
   return (
     <>
+      {error && (
+        <Alert variant="danger" className="mb-3">{error}</Alert>
+      )}
       <Button onClick={() => setShowModal(true)} className="mb-3">
         Add Blog
       </Button>

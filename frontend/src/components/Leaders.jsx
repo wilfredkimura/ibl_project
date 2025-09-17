@@ -26,14 +26,19 @@ const Leaders = () => {
         </p>
       </motion.div>
       <Row>
-        {leaders.map((leader, index) => (
-          <Col md={4} key={leader.id} className="mb-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="fade-in"
-            >
+        {leaders.length === 0 ? (
+          <Col>
+            <p>No leaders to display yet. Check back soon to meet our YCS leaders.</p>
+          </Col>
+        ) : (
+          leaders.map((leader, index) => (
+            <Col md={4} key={leader.id} className="mb-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="fade-in"
+              >
               <Card>
                 {leader.picture_url ? (
                   <Card.Img
@@ -58,9 +63,10 @@ const Leaders = () => {
                   </Card.Text>
                 </Card.Body>
               </Card>
-            </motion.div>
-          </Col>
-        ))}
+              </motion.div>
+            </Col>
+          ))
+        )}
       </Row>
     </Container>
   );

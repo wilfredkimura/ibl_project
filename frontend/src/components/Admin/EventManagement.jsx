@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal } from "react-bootstrap";
+import { Table, Button, Form, Modal, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
 const EventManagement = () => {
   const [events, setEvents] = useState([]);
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const { register, handleSubmit, reset } = useForm();
@@ -13,8 +14,15 @@ const EventManagement = () => {
     fetchEvents();
   }, []);
 
-  const fetchEvents = () => {
-    axios.get("/api/events").then((res) => setEvents(res.data));
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get("/api/events");
+      setEvents(res.data);
+      setError("");
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to load events";
+      setError(msg);
+    }
   };
 
   const onSubmit = async (data) => {
@@ -40,12 +48,19 @@ const EventManagement = () => {
       reset();
       setEditing(null);
     } catch (err) {
-      alert("Operation failed");
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Operation failed";
+      setError(msg);
     }
   };
 
-  const deleteEvent = (id) => {
-    axios.delete(`/api/events/${id}`).then(() => fetchEvents());
+  const deleteEvent = async (id) => {
+    try {
+      await axios.delete(`/api/events/${id}`);
+      fetchEvents();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to delete event";
+      setError(msg);
+    }
   };
 
   const editEvent = (event) => {
@@ -61,6 +76,9 @@ const EventManagement = () => {
 
   return (
     <>
+      {error && (
+        <Alert variant="danger" className="mb-3">{error}</Alert>
+      )}
       <Button onClick={() => setShowModal(true)} className="mb-3">
         Add Event
       </Button>

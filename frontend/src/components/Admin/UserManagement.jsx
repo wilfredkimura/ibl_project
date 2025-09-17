@@ -1,28 +1,54 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Alert } from "react-bootstrap";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = () => {
-    axios.get("/api/users").then((res) => setUsers(res.data));
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get("/api/users");
+      setUsers(res.data);
+      setError("");
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to load users";
+      setError(msg);
+    }
   };
 
-  const toggleAdmin = (id) => {
-    axios.put(`/api/users/${id}/toggle-admin`).then(() => fetchUsers());
+  const toggleAdmin = async (id) => {
+    try {
+      await axios.put(`/api/users/${id}/toggle-admin`);
+      fetchUsers();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to toggle admin";
+      setError(msg);
+    }
   };
 
-  const deleteUser = (id) => {
-    axios.delete(`/api/users/${id}`).then(() => fetchUsers());
+  const deleteUser = async (id) => {
+    try {
+      await axios.delete(`/api/users/${id}`);
+      fetchUsers();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to delete user";
+      setError(msg);
+    }
   };
 
   return (
-    <Table striped bordered hover>
+    <>
+      {error && (
+        <Alert variant="danger" className="mb-3">
+          {error}
+        </Alert>
+      )}
+      <Table striped bordered hover>
       <thead>
         <tr>
           <th>ID</th>
@@ -50,7 +76,8 @@ const UserManagement = () => {
           </tr>
         ))}
       </tbody>
-    </Table>
+      </Table>
+    </>
   );
 };
 

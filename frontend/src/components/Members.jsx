@@ -32,19 +32,6 @@ const Members = () => {
     fetchMembers();
   }, []);
 
-  if (error)
-    return (
-      <Container>
-        <Alert variant="danger">{error}</Alert>
-      </Container>
-    );
-  if (!members.length)
-    return (
-      <Container>
-        <div>Loading...</div>
-      </Container>
-    );
-
   return (
     <Container>
       <motion.div
@@ -59,24 +46,35 @@ const Members = () => {
           Catholic Church!
         </p>
       </motion.div>
-      <Row>
-        {members.map((member) => (
-          <Col md={4} key={member.id} className="mb-4">
-            <Card>
-              <Card.Img
-                variant="top"
-                src={member.picture_url || "/images/ycs-member-placeholder.png"}
-                alt={member.name}
-                style={{ height: "200px", objectFit: "cover" }}
-              />
-              <Card.Body>
-                <Card.Title>{member.name || "YCS Member"}</Card.Title>
-                <Card.Text>{member.bio || "A dedicated YCS member."}</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+
+      {error && (
+        <Alert variant="danger" className="mb-4">{error}</Alert>
+      )}
+
+      {!error && members.length === 0 && (
+        <div className="mb-4">Loading...</div>
+      )}
+
+      {members.length > 0 && (
+        <Row>
+          {members.map((member) => (
+            <Col md={4} key={member.id} className="mb-4">
+              <Card>
+                <Card.Img
+                  variant="top"
+                  src={member.picture_url || "/images/ycs-member-placeholder.png"}
+                  alt={member.name}
+                  style={{ height: "200px", objectFit: "cover" }}
+                />
+                <Card.Body>
+                  <Card.Title>{member.name || "YCS Member"}</Card.Title>
+                  <Card.Text>{member.bio || "A dedicated YCS member."}</Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
     </Container>
   );
 };

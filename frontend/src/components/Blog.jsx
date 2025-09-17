@@ -26,14 +26,19 @@ const Blog = () => {
         </p>
       </motion.div>
       <Row>
-        {blogs.map((blog, index) => (
-          <Col md={6} key={blog.id} className="mb-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="fade-in"
-            >
+        {blogs.length === 0 ? (
+          <Col>
+            <p>No blog posts yet. Discover our latest reflections!</p>
+          </Col>
+        ) : (
+          blogs.map((blog, index) => (
+            <Col md={6} key={blog.id} className="mb-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="fade-in"
+              >
               <Card>
                 {blog.picture_url ? (
                   <Card.Img
@@ -58,9 +63,10 @@ const Blog = () => {
                   </Card.Text>
                 </Card.Body>
               </Card>
-            </motion.div>
-          </Col>
-        ))}
+              </motion.div>
+            </Col>
+          ))
+        )}
       </Row>
     </Container>
   );

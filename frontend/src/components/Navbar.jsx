@@ -7,7 +7,7 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
 
   return (
-    <BSNavbar bg="primary" variant="dark" expand="lg" className="mb-4">
+    <BSNavbar expand="lg" className="mb-4 navbar-brown navbar-dark">
       <BSNavbar.Brand as={Link} to="/">
         <Image
           src="/images/ycs-placeholder.png"
@@ -16,6 +16,7 @@ const Navbar = () => {
           alt="YCS St. Dominic Logo"
         />
         YCS St. Dominic
+        {user?.is_admin && <span className="admin-badge ms-2">Admin</span>}
       </BSNavbar.Brand>
       <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
       <BSNavbar.Collapse id="basic-navbar-nav">

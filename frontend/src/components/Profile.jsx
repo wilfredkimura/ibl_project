@@ -77,19 +77,6 @@ const Profile = () => {
     }
   };
 
-  if (error)
-    return (
-      <Container>
-        <Alert variant="danger">{error}</Alert>
-      </Container>
-    );
-  if (!profile)
-    return (
-      <Container>
-        <div>Loading...</div>
-      </Container>
-    );
-
   const isOwnProfile = !userId || userId === String(user?.id);
 
   return (
@@ -100,69 +87,84 @@ const Profile = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-4"
       >
-        <h2>{isOwnProfile ? "Your Profile" : `${profile.name}'s Profile`}</h2>
+        <h2>
+          {isOwnProfile
+            ? "Your Profile"
+            : profile?.name
+            ? `${profile.name}'s Profile`
+            : "Member Profile"}
+        </h2>
         <p className="lead">
           {isOwnProfile
             ? "Manage your Youth Serving Christ (YCS) profile at St. Dominic Catholic Church."
             : "Learn more about this YCS member at St. Dominic Catholic Church, St. Theresa Kalimoni Parish."}
         </p>
       </motion.div>
-      {success && <Alert variant="success">{success}</Alert>}
-      <Card className="mx-auto" style={{ maxWidth: "500px" }}>
-        <Card.Body>
-          <div className="text-center mb-3">
-            <Image
-              src={profile.picture_url || "/images/ycs-member-placeholder.png"}
-              roundedCircle
-              style={{ width: "150px", height: "150px", objectFit: "cover" }}
-              alt={profile.name}
-            />
-          </div>
-          {editMode && isOwnProfile ? (
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <Form.Group className="mb-3">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  {...register("name")}
-                  placeholder="Enter your name"
+
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      {!error && !profile && <div>Loading...</div>}
+
+      {profile && (
+        <>
+          {success && <Alert variant="success">{success}</Alert>}
+          <Card className="mx-auto" style={{ maxWidth: "500px" }}>
+            <Card.Body>
+              <div className="text-center mb-3">
+                <Image
+                  src={profile.picture_url || "/images/ycs-member-placeholder.png"}
+                  roundedCircle
+                  style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                  alt={profile.name}
                 />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Bio</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  {...register("bio")}
-                  placeholder="Tell us about yourself"
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Profile Picture</Form.Label>
-                <Form.Control
-                  type="file"
-                  {...register("picture")}
-                  accept="image/*"
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit" className="me-2">
-                Save
-              </Button>
-              <Button variant="secondary" onClick={() => setEditMode(false)}>
-                Cancel
-              </Button>
-            </Form>
-          ) : (
-            <>
-              <h4>{profile.name || "YCS Member"}</h4>
-              <p>{profile.bio || "A dedicated member of our YCS community."}</p>
-              {isOwnProfile && (
-                <Button variant="primary" onClick={() => setEditMode(true)}>
-                  Edit Profile
-                </Button>
+              </div>
+              {editMode && isOwnProfile ? (
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                      {...register("name")}
+                      placeholder="Enter your name"
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Bio</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      {...register("bio")}
+                      placeholder="Tell us about yourself"
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Profile Picture</Form.Label>
+                    <Form.Control
+                      type="file"
+                      {...register("picture")}
+                      accept="image/*"
+                    />
+                  </Form.Group>
+                  <Button variant="primary" type="submit" className="me-2">
+                    Save
+                  </Button>
+                  <Button variant="secondary" onClick={() => setEditMode(false)}>
+                    Cancel
+                  </Button>
+                </Form>
+              ) : (
+                <>
+                  <h4>{profile.name || "YCS Member"}</h4>
+                  <p>{profile.bio || "A dedicated member of our YCS community."}</p>
+                  {isOwnProfile && (
+                    <Button variant="primary" onClick={() => setEditMode(true)}>
+                      Edit Profile
+                    </Button>
+                  )}
+                </>
               )}
-            </>
-          )}
-        </Card.Body>
-      </Card>
+            </Card.Body>
+          </Card>
+        </>
+      )}
     </Container>
   );
 };

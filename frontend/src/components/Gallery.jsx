@@ -26,29 +26,35 @@ const Gallery = () => {
         </p>
       </motion.div>
       <Row className="g-3">
-        {images.map((img, index) => (
-          <Col md={3} key={img.id} className="mb-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="fade-in"
-            >
-              <Image
-                src={
-                  img.picture_url ||
-                  "https://via.placeholder.com/300?text=YCS+Activity"
-                }
-                thumbnail
-                alt={img.caption || "YCS Activity"}
-                className="w-100"
-              />
-              <p className="text-center mt-2">
-                {img.caption || "A moment from YCS at St. Dominic"}
-              </p>
-            </motion.div>
+        {images.length === 0 ? (
+          <Col>
+            <p>No gallery images yet. Check back soon for moments from our YCS activities.</p>
           </Col>
-        ))}
+        ) : (
+          images.map((img, index) => (
+            <Col md={3} key={img.id} className="mb-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="fade-in"
+              >
+                <Image
+                  src={
+                    img.picture_url ||
+                    "https://via.placeholder.com/300?text=YCS+Activity"
+                  }
+                  thumbnail
+                  alt={img.caption || "YCS Activity"}
+                  className="w-100"
+                />
+                <p className="text-center mt-2">
+                  {img.caption || "A moment from YCS at St. Dominic"}
+                </p>
+              </motion.div>
+            </Col>
+          ))
+        )}
       </Row>
     </Container>
   );

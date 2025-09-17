@@ -1,11 +1,88 @@
-/* Styling for YCS St. Dominic with Brown Accents */
+/* Minimalist Brown and Beige Theme */
 :root {
-  --ycs-primary: #8b4513; /* YCS Blue */
-  --ycs-accent: #8b4513; /* Brown accent */
-  --ycs-hover: #ffd700; /* Gold hover */
-  --ycs-dark: #2c2c2c; /* Dark footer */
-  --ycs-light: #f8f9fa; /* Light background */
-  --ycs-text: #333333; /* Dark text */
+  --ycs-primary: #A0522D; /* Sienna (Medium Brown) */
+  --ycs-accent: #8B4513; /* SaddleBrown (Darker Brown) */
+  --ycs-hover: #D2B48C; /* Tan (Lighter Brown/Gold) */
+  --ycs-dark: #3D2B1F; /* Dark Brown for footer */
+  --ycs-light: #F5F5DC; /* Beige Background */
+  --ycs-text: #654321; /* Dark Brown for text */
+}
+
+/* Navbar - Brown Theme */
+.navbar-brown {
+  background-color: var(--ycs-primary) !important;
+  color: var(--ycs-light) !important;
+}
+.navbar-brown .navbar-brand,
+.navbar-brown .nav-link,
+.navbar-brown .navbar-text,
+.navbar-brown .btn-link {
+  color: var(--ycs-light) !important;
+}
+.navbar-brown .nav-link:hover,
+.navbar-brown .navbar-brand:hover {
+  color: var(--ycs-hover) !important;
+}
+.navbar-brown .btn,
+.navbar-brown .btn-outline-light {
+  border-color: var(--ycs-light) !important;
+  color: var(--ycs-light) !important;
+}
+.navbar-brown .btn:hover,
+.navbar-brown .btn-outline-light:hover {
+  background-color: var(--ycs-accent) !important;
+  color: var(--ycs-light) !important;
+}
+.navbar-brown .navbar-toggler {
+  border-color: var(--ycs-light) !important;
+}
+.navbar-brown .navbar-toggler-icon {
+  filter: invert(90%);
+}
+
+/* Admin badge next to brand */
+.admin-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  background-color: var(--ycs-hover);
+  color: var(--ycs-dark);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Buttons - Theme */
+.btn-primary {
+  background-color: var(--ycs-primary) !important;
+  border-color: var(--ycs-primary) !important;
+  color: var(--ycs-light) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--ycs-accent) !important;
+  border-color: var(--ycs-accent) !important;
+}
+
+.btn-secondary {
+  background-color: var(--ycs-hover) !important;
+  border-color: var(--ycs-hover) !important;
+  color: var(--ycs-dark) !important;
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: var(--ycs-primary) !important;
+  border-color: var(--ycs-primary) !important;
+  color: var(--ycs-light) !important;
+}
+
+/* General links */
+a,
+.link-primary {
+  color: var(--ycs-primary);
+}
+a:hover,
+.link-primary:hover {
+  color: var(--ycs-accent);
 }
 
 /* Layout */

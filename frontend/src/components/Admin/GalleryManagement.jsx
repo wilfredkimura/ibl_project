@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal } from "react-bootstrap";
+import { Table, Button, Form, Modal, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
 const GalleryManagement = () => {
   const [images, setImages] = useState([]);
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const { register, handleSubmit, reset } = useForm();
 
@@ -12,8 +13,15 @@ const GalleryManagement = () => {
     fetchImages();
   }, []);
 
-  const fetchImages = () => {
-    axios.get("/api/gallery").then((res) => setImages(res.data));
+  const fetchImages = async () => {
+    try {
+      const res = await axios.get("/api/gallery");
+      setImages(res.data);
+      setError("");
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to load gallery";
+      setError(msg);
+    }
   };
 
   const onSubmit = async (data) => {
@@ -29,16 +37,26 @@ const GalleryManagement = () => {
       setShowModal(false);
       reset();
     } catch (err) {
-      alert("Operation failed");
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Operation failed";
+      setError(msg);
     }
   };
 
-  const deleteImage = (id) => {
-    axios.delete(`/api/gallery/${id}`).then(() => fetchImages());
+  const deleteImage = async (id) => {
+    try {
+      await axios.delete(`/api/gallery/${id}`);
+      fetchImages();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Failed to delete image";
+      setError(msg);
+    }
   };
 
   return (
     <>
+      {error && (
+        <Alert variant="danger" className="mb-3">{error}</Alert>
+      )}
       <Button onClick={() => setShowModal(true)} className="mb-3">
         Add Image
       </Button>
