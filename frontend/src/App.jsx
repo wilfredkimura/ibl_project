@@ -1,0 +1,54 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
+import Home from "./components/Home.jsx";
+import Register from "./components/Register.jsx";
+import Login from "./components/Login.jsx";
+import Profile from "./components/Profile.jsx";
+import Members from "./components/Members.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile/:userId"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/members"
+              element={
+                <PrivateRoute>
+                  <Members />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </main>
+        <Footer />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;

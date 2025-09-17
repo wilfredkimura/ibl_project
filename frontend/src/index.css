@@ -1,0 +1,189 @@
+/* Styling for YCS St. Dominic with Brown Accents */
+:root {
+  --ycs-primary: #8b4513; /* YCS Blue */
+  --ycs-accent: #8b4513; /* Brown accent */
+  --ycs-hover: #ffd700; /* Gold hover */
+  --ycs-dark: #2c2c2c; /* Dark footer */
+  --ycs-light: #f8f9fa; /* Light background */
+  --ycs-text: #333333; /* Dark text */
+}
+
+/* Layout */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--ycs-light);
+  color: var(--ycs-text);
+  line-height: 1.6;
+  color: var(--ycs-text);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--ycs-primary);
+  border-color: var(--ycs-primary);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--ycs-accent);
+  border-color: var(--ycs-accent);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: var(--ycs-accent);
+  border-color: var(--ycs-accent);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--ycs-hover);
+  border-color: var(--ycs-hover);
+  transform: translateY(-2px);
+}
+
+/* Links */
+a.nav-link {
+  color: var(--ycs-primary) !important;
+  transition: color 0.3s ease;
+}
+
+a.nav-link:hover {
+  color: var(--ycs-accent) !important;
+}
+
+/* Cards */
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  color: var(--ycs-primary);
+}
+
+/* Lazy-loaded images */
+.lazy-load-image-background {
+  width: 100%;
+  display: block;
+}
+
+.lazy-load-image-background img {
+  transition: opacity 0.5s ease;
+}
+
+/* Footer */
+footer {
+  background-color: var(--ycs-dark);
+  color: #ffffff;
+  padding: 2rem 0;
+  width: 100%;
+  margin-top: auto;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+}
+
+footer .container {
+  max-width: 1200px;
+}
+
+footer h5 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--ycs-hover);
+}
+
+footer p {
+  font-family: "Roboto", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+footer .nav-link {
+  font-family: "Roboto", sans-serif;
+  font-size: 0.9rem;
+  color: #e0e0e0 !important;
+  padding: 0.25rem 0;
+  transition: color 0.3s ease;
+}
+
+footer .nav-link:hover {
+  color: var(--ycs-accent) !important;
+}
+
+footer hr {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 1.5rem 0;
+}
+
+footer .text-center p {
+  font-size: 0.85rem;
+  color: #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  .card {
+    margin-bottom: 1.5rem;
+  }
+  footer {
+    padding: 1.5rem 0;
+  }
+  footer .col-md-4 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  footer h5 {
+    font-size: 1.1rem;
+  }
+  footer .nav {
+    flex-direction: column;
+    align-items: center;
+  }
+  footer .nav-link {
+    font-size: 0.85rem;
+  }
+}
