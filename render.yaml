@@ -15,10 +15,6 @@ services:
       - key: JWT_SECRET
         value: change-me-in-render-dashboard
       # Add other environment variables from your .env file
-    disk:
-      name: uploads
-      mountPath: /opt/render/project/src/backend/uploads
-      sizeGB: 1
 
 databases:
   - name: ysc_stdominic
