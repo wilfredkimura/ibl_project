@@ -3,8 +3,8 @@ services:
     name: ysc_stdominic
     env: node
     buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
+    postDeployCommand: cd backend && npm run migrate
     startCommand: cd backend && node server.js
-    postdeploy: cd backend && npm run migrate
     envVars:
       - key: NODE_ENV
         value: production
