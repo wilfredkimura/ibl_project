@@ -3,7 +3,7 @@ services:
     name: ysc_stdominic
     plan: free
     env: node
-    buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
+    buildCommand: cd backend && npm install && cd ../frontend && npm install --include=dev && npm run build
     startCommand: cd backend && npm run migrate && node server.js
     envVars:
       - key: NODE_ENV
