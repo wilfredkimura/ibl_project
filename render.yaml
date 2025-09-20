@@ -1,6 +1,7 @@
 services:
   - type: web
     name: ysc_stdominic
+    plan: free
     env: node
     buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
     startCommand: cd backend && npm run migrate && node server.js
@@ -19,4 +20,4 @@ databases:
   - name: ysc_stdominic
     databaseName: ysc_stdominic
     user: ysc_stdominic_user
-    plan: free  # or paid plan for production
+    plan: free
