@@ -1,17 +1,19 @@
-# YCS St. Dominic Web App
+# YCS St. Dominic — Web + Mobile App
 
-Youth Serving Christ (YCS) at St. Dominic Catholic Church — a full‑stack web application built with React (Vite + Material UI) on the frontend and Node.js + Express on the backend. The app supports authentication, profiles, leaders, blogs, events, and a gallery.
+Youth Serving Christ (YCS) at St. Dominic Catholic Church — a full‑stack application with a responsive website and a companion mobile app. The web app is built with React (Vite + Material UI) and the backend is Node.js + Express with PostgreSQL. The mobile app is built with Expo (React Native) and mirrors the website features and UI (parity) including an Admin dashboard.
 
-This document explains the project structure, how to run it locally, how to expose it on your LAN, and how to set up PostgreSQL.
+This document covers project structure, local setup (web, backend, and mobile), PostgreSQL, deployment to Render (free tier), and recent feature updates (gallery albums/lightbox, admin thumbnails, native date/time pickers, parity notes).
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: React (Vite), React Router, Material UI, Framer Motion, Swiper, React Hook Form
+- **Frontend (Web)**: React (Vite), React Router, Material UI, Framer Motion, Swiper, React Hook Form
 - **Backend**: Node.js, Express, CORS, Static uploads
 - **Database**: PostgreSQL
-- **Auth**: JWT (access token stored in localStorage)
+- **Auth**: JWT (web: localStorage, mobile: SecureStore)
+- **Mobile**: Expo (React Native), React Navigation, React Native Paper, react-native-image-viewing, @react-native-community/datetimepicker, @react-native-picker/picker
+- **Deployment**: Render (free tier), render.yaml blueprint
 
 ---
 
@@ -23,8 +25,13 @@ ibl_project/
 │  ├─ index.js                  # Express server entry
 │  ├─ routes/
 │  │  ├─ auth.js                # /api/auth (login/register)
-│  │  ├─ profile.js             # /api/profile
-│  │  └─ users.js               # /api/users (admin)
+│  │  ├─ profile.js             # /api/profile (now returns is_admin, email)
+│  │  ├─ users.js               # /api/users (admin)
+│  │  ├─ blog.js                # /api/blog
+│  │  ├─ events.js              # /api/events
+│  │  ├─ leaders.js             # /api/leaders
+│  │  ├─ gallery.js             # /api/gallery
+│  │  └─ albums.js              # /api/albums
 │  ├─ uploads/                  # uploaded files (served at /uploads)
 │  └─ .env                      # backend environment (you create this)
 │
@@ -40,10 +47,33 @@ ibl_project/
 │  │  ├─ components/
 │  │  │  ├─ Navbar.jsx, Footer.jsx
 │  │  │  ├─ Home.jsx, Blog.jsx, Events.jsx, Gallery.jsx
+│  │  │  ├─ GalleryAlbums.jsx, GalleryAlbum.jsx  # Albums list + album lightbox with keyboard nav and x-of-y
 │  │  │  ├─ Register.jsx, Login.jsx, Profile.jsx, Members.jsx, Leaders.jsx
 │  │  │  ├─ AdminDashboard.jsx
 │  │  │  └─ Admin/* (management UIs)
 │  └─ package.json              # Vite scripts
+│
+├─ mobile/
+│  ├─ app.json                  # Expo config (extra.apiBaseUrl)
+│  ├─ App.js                    # Root (AuthProvider, PaperProvider/theme)
+│  ├─ index.js                  # registerRootComponent
+│  ├─ package.json              # Expo dependencies
+│  └─ src/
+│     ├─ api.js                 # axios baseURL, JWT interceptor, absoluteUrl
+│     ├─ context/AuthContext.js # JWT storage (SecureStore), fetch /api/profile for is_admin
+│     ├─ navigation/AppNavigator.js
+│     ├─ screens/
+│     │  ├─ HomeScreen.js, BlogDetailScreen.js, EventsScreen.js,
+│     │  ├─ LeadersScreen.js, ProfileScreen.js,
+│     │  ├─ GalleryAlbumsScreen.js, GalleryScreen.js (pinch-to-zoom, x-of-y)
+│     │  └─ admin/
+│     │     ├─ AdminDashboardScreen.js
+│     │     ├─ AdminUsersScreen.js
+│     │     ├─ AdminBlogsScreen.js (thumbnails)
+│     │     ├─ AdminEventsScreen.js (native DateTimePicker + thumbnails)
+│     │     ├─ AdminGalleryScreen.js (albums + uploads)
+│     │     └─ AdminLeadersScreen.js (thumbnails)
+│     └─ ...
 │
 └─ README.md                    # This file
 ```
@@ -160,7 +190,9 @@ ibl_project/
 
    The server will start on `http://localhost:5000`.
 
-> Note: The provided `backend/index.js` wires routes: `/api/auth`, `/api/profile`, `/api/users`. Ensure your route handlers connect to PostgreSQL using your preferred library (e.g., `pg`, `knex`, or an ORM) and implement the additional endpoints used by the frontend such as `/api/blog`, `/api/events`, `/api/gallery`.
+> Admin profile parity: `profile.js` now includes `is_admin` and `email` in `SELECT` and `RETURNING`, so both web and mobile can render an Admin Dashboard link/tab when appropriate.
+
+> Note: Backend routes include auth, profile, users, blog, events, leaders, gallery, and albums per the repository structure above. Ensure CORS is configured for both your dev web origin and your mobile app usage during local dev.
 
 ---
 
@@ -220,24 +252,31 @@ ibl_project/
 
 ---
 
-## Key Frontend Features
+## Key Frontend Features (Web)
 
 - **Hero section** on `Home.jsx` with background image, call‑to‑action buttons.
 - **Blog carousel** using Swiper (Autoplay, Navigation, Pagination) and linking to `/blog/:id`.
-- **Gallery carousel** for recent images.
+- **Gallery albums and lightbox**
+  - Albums grid (`GalleryAlbums.jsx`) and per‑album grid (`GalleryAlbum.jsx`).
+  - Lightbox with previous/next, image preloading, zoom/pan, and keyboard navigation (Left/Right/Escape).
+  - Footer shows “x of y” indicator and caption.
 - **Upcoming events** showing soonest 3 events.
 - **Responsive UI** with Material UI’s theme (`frontend/src/theme.js`), responsive typography, and Drawer navigation for small screens.
 - **Self‑hosted fonts** (`Ubuntu Mono`).
 
+Admin UX
+- Navbar shows an “Admin Dashboard” link and an Admin chip when `user.is_admin` is true.
+
 ---
 
-## API Contracts (Expected by Frontend)
+## API Contracts (Web/Mobile)
 
 The frontend calls:
 
 - `GET /api/blog` → `[ { id, title, content, picture_url, date } ]`
 - `GET /api/events` → `[ { id, title, description, date, picture_url } ]`
 - `GET /api/gallery` → `[ { id, album_id, caption, picture_url, created_at } ]`
+- `GET /api/albums` → `[ { id, title, date, cover_url } ]`
 - `GET /api/leaders` → `[ { id, name, position, bio, picture_url } ]`
 - `GET /api/users` (admin) → users list
 - `POST /api/auth/login` → `{ token, user }`
@@ -271,13 +310,64 @@ If your current backend is missing some of these routes, add them to match the U
 
 ---
 
-## Deployment Overview
+## Deployment Overview (Web + Backend)
 
-You can deploy the frontend (static build) to any static host (Netlify, Vercel, S3 + CloudFront). The backend can be deployed to a VPS or PaaS (Railway, Render, Fly.io, Heroku successor platforms) with a managed PostgreSQL service. Make sure to:
+You can deploy the frontend (static build) to any static host (Netlify, Vercel, S3 + CloudFront). The backend can be deployed to a VPS or PaaS (Railway, Render, Fly.io, Heroku successor platforms). Render free‑tier is supported via `render.yaml` in this repo. Make sure to:
 
 - Set backend `.env` with production `DATABASE_URL` and `JWT_SECRET`.
 - Serve uploads from a durable storage (S3, local volume, or shared disk), and point picture URLs accordingly.
 - Configure CORS for your production frontend domain.
+
+---
+
+## Mobile App (Expo)
+
+The mobile app mirrors the website with UI/feature parity and adds native UX.
+
+Key features
+- Admin tab (visible only when `is_admin` is true).
+- Gallery albums and pinch‑to‑zoom viewer (`react-native-image-viewing`) with “x of y” indicator.
+- Admin lists show thumbnails (Blogs, Events, Leaders).
+- Events use native `@react-native-community/datetimepicker`.
+- Consistent typography/spacing with React Native Paper theme.
+
+Install & run (from `mobile/`)
+```bash
+npm install
+npm start
+# Press "a" to open Android emulator
+```
+
+Local API configuration
+- `mobile/app.json` defines `expo.extra.apiBaseUrl`.
+- When using Android emulator to access your dev backend on the same machine, use `http://10.0.2.2:5000` as the base URL.
+
+Auth & profile
+- JWT is stored in `SecureStore`.
+- After startup/login, the app calls `/api/profile` to fetch authoritative `is_admin` and user fields (fallback to `jwt-decode` if needed).
+
+Packages of note
+- `react-native-image-viewing`, `@react-native-community/datetimepicker`, `@react-navigation/*`, `react-native-paper`, `expo-secure-store`, `@expo/vector-icons`.
+
+---
+
+## Render Deployment (Free Tier)
+
+This repo includes `render.yaml` for the free tier.
+
+Web service
+- plan: `free`.
+- buildCommand: install backend, then frontend with dev dependencies to ensure Vite is available, e.g.
+  - `cd backend && npm install && cd ../frontend && npm install --include=dev && npm run build`
+- startCommand: run DB migrations at boot (free tier has no persistent disk for cron jobs), then start server, e.g.
+  - `cd backend && npm run migrate && node server.js`
+
+Database
+- PostgreSQL plan: `free`.
+
+Notes
+- Ensure CORS is configured for your production frontend.
+- Store uploads on durable storage for production (S3 or persistent volume). Free tier ephemeral storage may be wiped on redeploy.
 
 ---
 
@@ -287,6 +377,9 @@ You can deploy the frontend (static build) to any static host (Netlify, Vercel, 
 - **Port conflicts**: change Vite port `--port 5174` or backend `PORT`.
 - **CORS errors**: set `CORS_ORIGIN` to your frontend URL.
 - **LAN access fails**: check Windows firewall and that devices share the same network.
+ - **Android emulator can’t reach backend**: use `http://10.0.2.2:5000` in `mobile/app.json`.
+ - **Expo datetime picker peer dependency**: pinned `@react-native-community/datetimepicker@^7.6.3` for Expo SDK 51.
+ - **Render build fails: vite not found**: ensure `npm install --include=dev` runs before `npm run build` for the frontend.
 
 ---
 
