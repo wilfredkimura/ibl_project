@@ -37,7 +37,7 @@ router.get("/", auth, async (req, res) => {
   try {
     const userId = req.user.id;
     const result = await pool.query(
-      "SELECT id, name, bio, picture_url FROM users WHERE id = $1",
+      "SELECT id, name, email, bio, picture_url, is_admin FROM users WHERE id = $1",
       [userId]
     );
     if (result.rows.length === 0) {
@@ -54,7 +54,7 @@ router.get("/:userId", auth, async (req, res) => {
   try {
     const { userId } = req.params;
     const result = await pool.query(
-      "SELECT id, name, bio, picture_url FROM users WHERE id = $1",
+      "SELECT id, name, email, bio, picture_url, is_admin FROM users WHERE id = $1",
       [userId]
     );
     if (result.rows.length === 0) {
@@ -95,7 +95,7 @@ router.put("/", [auth, upload.single("picture")], async (req, res) => {
     values.push(req.user.id);
     const query = `UPDATE users SET ${updateFields.join(
       ", "
-    )} WHERE id = $${paramIndex} RETURNING id, name, bio, picture_url`;
+    )} WHERE id = $${paramIndex} RETURNING id, name, email, bio, picture_url, is_admin`;
     const result = await pool.query(query, values);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });

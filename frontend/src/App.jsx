@@ -11,6 +11,8 @@ import Leaders from "./components/Leaders.jsx";
 import Blog from "./components/Blog.jsx";
 import Events from "./components/Events.jsx";
 import Gallery from "./components/Gallery.jsx";
+import GalleryAlbums from "./components/GalleryAlbums.jsx";
+import GalleryAlbum from "./components/GalleryAlbum.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 
@@ -26,7 +28,9 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<Blog />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/gallery" element={<GalleryAlbums />} />
+            <Route path="/gallery/album/:id" element={<GalleryAlbum />} />
+            <Route path="/gallery/ungrouped" element={<GalleryAlbum ungrouped />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route

@@ -12,6 +12,9 @@ import {
   Button,
   CircularProgress,
   Stack,
+  Dialog,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 
 const Gallery = () => {
@@ -20,6 +23,10 @@ const Gallery = () => {
   const [albumImages, setAlbumImages] = useState({}); // id -> images[]
   const [loadingAlbumId, setLoadingAlbumId] = useState(null);
   const [ungroupedImages, setUngroupedImages] = useState(null);
+
+  // Fullscreen viewer state
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -134,20 +141,22 @@ const Gallery = () => {
             </Stack>
           ) : (
             <Grid container spacing={2}>
-              {(selectedAlbum === "ungrouped" ? ungroupedImages || [] : albumImages[selectedAlbum.id] || []).map((img) => (
+              {(selectedAlbum === "ungrouped" ? ungroupedImages || [] : albumImages[selectedAlbum.id] || []).map((img, idx) => (
                 <Grid item md={3} sm={4} xs={6} key={img.id}>
                   <Card>
-                    <CardMedia
-                      component="img"
-                      sx={{ height: { xs: 140, sm: 180 } }}
-                      image={img.picture_url || "https://via.placeholder.com/300?text=YCS+Activity"}
-                      alt={img.caption || "YCS Activity"}
-                    />
-                    <CardContent>
-                      <Typography variant="body2" textAlign="center">
-                        {img.caption || "A moment from YCS at St. Dominic"}
-                      </Typography>
-                    </CardContent>
+                    <CardActionArea onClick={() => { setCurrentIndex(idx); setViewerOpen(true); }}>
+                      <CardMedia
+                        component="img"
+                        sx={{ height: { xs: 140, sm: 180 } }}
+                        image={img.picture_url || "https://via.placeholder.com/300?text=YCS+Activity"}
+                        alt={img.caption || "YCS Activity"}
+                      />
+                      <CardContent>
+                        <Typography variant="body2" textAlign="center">
+                          {img.caption || "A moment from YCS at St. Dominic"}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
                   </Card>
                 </Grid>
               ))}
@@ -160,6 +169,51 @@ const Gallery = () => {
           </Stack>
         </Stack>
       )}
+
+      {/* Fullscreen viewer */}
+      <Dialog open={viewerOpen} onClose={() => setViewerOpen(false)} maxWidth="md" fullWidth>
+        <DialogContent sx={{ p: 0, bgcolor: "black" }}>
+          {(() => {
+            const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
+            const item = list[currentIndex];
+            if (!item) return null;
+            return (
+              <img
+                src={item.picture_url || "https://via.placeholder.com/1200x800?text=YCS+Activity"}
+                alt={item.caption || "YCS Activity"}
+                style={{ width: "100%", height: "80vh", objectFit: "contain" }}
+              />
+            );
+          })()}
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "space-between" }}>
+          <Button
+            onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+            disabled={currentIndex <= 0}
+          >
+            Previous
+          </Button>
+          <Typography variant="body2" sx={{ flex: 1, textAlign: "center", px: 2 }}>
+            {(() => {
+              const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
+              const item = list[currentIndex];
+              return item?.caption || "";
+            })()}
+          </Typography>
+          <Button
+            onClick={() => {
+              const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
+              setCurrentIndex((i) => Math.min(list.length - 1, i + 1));
+            }}
+            disabled={(() => {
+              const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
+              return currentIndex >= list.length - 1;
+            })()}
+          >
+            Next
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

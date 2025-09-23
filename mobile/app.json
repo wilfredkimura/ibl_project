@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "YSC StDominic",
+    "slug": "ysc-stdominic",
+    "scheme": "yscstdominic",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.yourorg.yscstdominic"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "apiBaseUrl": "http://10.0.2.2:5000"
+    }
+  }
+}
