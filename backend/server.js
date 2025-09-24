@@ -29,13 +29,28 @@ app.use("/api/users", require("./routes/users"));
 const PORT = process.env.PORT || 5000;
 // Add this to server.js before the app.listen() call
 if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the React app
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  
-  // Handle React routing for non-API routes (Express 5 compatible)
-  // Use a regex instead of '*' to avoid path-to-regexp error and to exclude /api/*
-  app.get(/^(?!\/api).*/, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+  // Determine where the frontend build exists at runtime
+  const distCandidates = [
+    path.join(__dirname, '../frontend/dist'), // monorepo path
+    path.join(__dirname, 'dist'),             // copied into backend at build
+    process.env.FRONTEND_DIST && path.isAbsolute(process.env.FRONTEND_DIST)
+      ? process.env.FRONTEND_DIST
+      : null,
+  ].filter(Boolean);
+
+  const existingDist = distCandidates.find((p) => {
+    try { return fs.existsSync(path.join(p, 'index.html')); } catch { return false; }
   });
+
+  if (existingDist) {
+    app.use(express.static(existingDist));
+
+    // Handle React routing for non-API routes (Express 5 compatible)
+    app.get(/^(?!\/api).*/, (req, res) => {
+      res.sendFile(path.join(existingDist, 'index.html'));
+    });
+  } else {
+    console.warn('[server] frontend build not found; skipping static serving');
+  }
 }
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
