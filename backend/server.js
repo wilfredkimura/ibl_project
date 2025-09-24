@@ -32,8 +32,9 @@ if (process.env.NODE_ENV === 'production') {
   // Serve static files from the React app
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
   
-  // Handle React routing, return all requests to React app
-  app.get('*', (req, res) => {
+  // Handle React routing for non-API routes (Express 5 compatible)
+  // Use a regex instead of '*' to avoid path-to-regexp error and to exclude /api/*
+  app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
   });
 }
