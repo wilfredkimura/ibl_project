@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Container, Paper, TextField, Button, Alert, Stack, Typography, Link } from "@mui/material";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 const Register = () => {
   const {
@@ -12,12 +13,19 @@ const Register = () => {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const [error, setError] = useState("");
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post("/api/auth/register", data);
-      localStorage.setItem("token", res.data.token);
+      const { name, email, password, confirmPassword } = data;
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+      const res = await axios.post("/api/auth/register", { name, email, password });
+      // Auto-login: persist token and user in our context (and storage)
+      login(res.data.token, res.data.user, true);
       navigate("/");
     } catch (err) {
       const errorMessage =
@@ -67,12 +75,22 @@ const Register = () => {
               helperText={errors.password?.message}
               placeholder="Enter your password"
             />
+            <TextField
+              type="password"
+              label="Confirm Password"
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                minLength: { value: 6, message: "Password must be at least 6 characters" },
+              })}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword?.message}
+              placeholder="Re-enter your password"
+            />
             <Button type="submit" variant="contained">Register</Button>
             <Typography variant="body2" color="text.secondary">
               Already have an account?{' '}
               <Link component={RouterLink} to="/login">Login</Link>
             </Typography>
-            
           </Stack>
         </Paper>
       </motion.div>
