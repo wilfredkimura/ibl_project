@@ -4,6 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const db = require("./db");
+const os = require("os");
 
 const app = express();
 app.use(cors());
@@ -37,6 +38,25 @@ app.get("/api/health", async (req, res) => {
     res.status(500).json({ ok: false, error: "DB check failed" });
   }
 });
+
+// Optional: apply schema at boot if AUTO_MIGRATE is enabled (default true in production)
+async function applySchemaAtBoot() {
+  const shouldMigrate = process.env.AUTO_MIGRATE === '1' || (process.env.NODE_ENV === 'production' && process.env.AUTO_MIGRATE !== '0');
+  if (!shouldMigrate) return;
+  try {
+    const schemaPath = path.join(__dirname, 'schema.sql');
+    const sql = fs.readFileSync(schemaPath, 'utf8');
+    if (!sql || !sql.trim()) {
+      console.warn('[boot-migrate] schema.sql empty, skipping');
+      return;
+    }
+    console.log('[boot-migrate] applying schema…', { file: schemaPath, length: sql.length, host: os.hostname() });
+    await db.query(sql);
+    console.log('[boot-migrate] done');
+  } catch (e) {
+    console.error('[boot-migrate] failed:', e.stack || e);
+  }
+}
 
 const PORT = process.env.PORT || 5000;
 // Add this to server.js before the app.listen() call

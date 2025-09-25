@@ -14,11 +14,13 @@ const pool = require('../db');
       console.log('No SQL found in schema.sql, skipping.');
       process.exit(0);
     }
+    console.log('[migrate] Applying schema from', schemaPath);
+    console.log('[migrate] Schema length (chars):', sql.length);
     await pool.query(sql);
     console.log('Database schema applied successfully.');
     process.exit(0);
   } catch (err) {
-    console.error('Failed to apply database schema:', err);
+    console.error('Failed to apply database schema:', err?.stack || err);
     process.exit(1);
   }
 })();

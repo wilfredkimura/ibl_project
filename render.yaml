@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ysc_stdominic
+    name: ibl_project
     plan: free
     env: node
     buildCommand: >-
