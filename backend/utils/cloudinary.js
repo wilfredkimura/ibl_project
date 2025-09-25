@@ -2,9 +2,9 @@ const cloudinary = require('cloudinary').v2;
 
 // Require a single CLOUDINARY_URL for configuration.
 // Format: cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>
-if (!process.env.cloudinary://259261594318917:BVNWhYHXc6NJ7ElVihvm11L0_yg@dl7gcyjbx) {
+if (!process.env.CLOUDINARY_URL) {
   throw new Error(
-    'CLOUDINARY_URL is not set. Please configure CLOUDINARY_URL in your environment as cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>'
+    'CLOUDINARY_URL is not set. Please configure CLOUDINARY_URL in your Render environment as cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>'
   );
 }
 
