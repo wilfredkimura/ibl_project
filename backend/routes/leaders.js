@@ -4,6 +4,7 @@ const db = require("../db");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const upload = require("../middleware/upload");
+const { uploadBuffer } = require("../utils/uploadToCloudinary");
 
 // Public get
 router.get("/", async (req, res) => {
@@ -18,28 +19,38 @@ router.get("/", async (req, res) => {
 // Admin routes
 router.post("/", auth, admin, upload.single("picture"), async (req, res) => {
   const { name, position, bio } = req.body;
-  const picture_url = req.file ? `/uploads/${req.file.filename}` : null;
+  let picture_url = null;
   try {
+    if (req.file) {
+      const up = await uploadBuffer(req.file, 'leaders');
+      picture_url = up.secure_url;
+    }
     await db.query(
       "INSERT INTO leaders (name, position, bio, picture_url) VALUES ($1, $2, $3, $4)",
       [name, position, bio, picture_url]
     );
     res.json({ msg: "Leader added" });
   } catch (err) {
+    console.error('[leaders] POST / error:', err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
 
 router.put("/:id", auth, admin, upload.single("picture"), async (req, res) => {
   const { name, position, bio } = req.body;
-  const picture_url = req.file ? `/uploads/${req.file.filename}` : null;
+  let picture_url = null;
   try {
+    if (req.file) {
+      const up = await uploadBuffer(req.file, 'leaders');
+      picture_url = up.secure_url;
+    }
     await db.query(
       "UPDATE leaders SET name = $1, position = $2, bio = $3, picture_url = COALESCE($4, picture_url) WHERE id = $5",
       [name, position, bio, picture_url, req.params.id]
     );
     res.json({ msg: "Leader updated" });
   } catch (err) {
+    console.error('[leaders] PUT /:id error:', err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });

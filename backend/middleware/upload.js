@@ -1,7 +1,5 @@
 const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
-});
+// Use memory storage so we can stream to Cloudinary (or other remote storage)
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 module.exports = upload;

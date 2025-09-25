@@ -4,6 +4,7 @@ const db = require("../db");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const upload = require("../middleware/upload");
+const { uploadBuffer } = require("../utils/uploadToCloudinary");
 
 // Public get
 router.get("/", async (req, res) => {
@@ -19,8 +20,12 @@ router.get("/", async (req, res) => {
 // Admin routes
 router.post("/", auth, admin, upload.single("picture"), async (req, res) => {
   const { title, description, date, is_future } = req.body;
-  const picture_url = req.file ? `/uploads/${req.file.filename}` : null;
+  let picture_url = null;
   try {
+    if (req.file) {
+      const up = await uploadBuffer(req.file, 'events');
+      picture_url = up.secure_url;
+    }
     await db.query(
       "INSERT INTO events (title, description, date, picture_url, is_future) VALUES ($1, $2, $3, $4, $5)",
       [title, description, date, picture_url, is_future]
@@ -34,8 +39,12 @@ router.post("/", auth, admin, upload.single("picture"), async (req, res) => {
 
 router.put("/:id", auth, admin, upload.single("picture"), async (req, res) => {
   const { title, description, date, is_future } = req.body;
-  const picture_url = req.file ? `/uploads/${req.file.filename}` : null;
+  let picture_url = null;
   try {
+    if (req.file) {
+      const up = await uploadBuffer(req.file, 'events');
+      picture_url = up.secure_url;
+    }
     await db.query(
       "UPDATE events SET title = $1, description = $2, date = $3, picture_url = COALESCE($4, picture_url), is_future = $5 WHERE id = $6",
       [title, description, date, picture_url, is_future, req.params.id]

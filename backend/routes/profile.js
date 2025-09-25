@@ -2,36 +2,8 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const auth = require("../middleware/auth");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png/;
-    const extname = filetypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-    const mimetype = filetypes.test(file.mimetype);
-    if (extname && mimetype) {
-      return cb(null, true);
-    }
-    cb(new Error("Only JPEG/PNG images are allowed"));
-  },
-});
+const upload = require("../middleware/upload");
+const { uploadBuffer } = require("../utils/uploadToCloudinary");
 
 router.get("/", auth, async (req, res) => {
   try {
@@ -70,7 +42,11 @@ router.get("/:userId", auth, async (req, res) => {
 router.put("/", [auth, upload.single("picture")], async (req, res) => {
   try {
     const { name, bio } = req.body;
-    const picture_url = req.file ? `/uploads/${req.file.filename}` : null;
+    let picture_url = null;
+    if (req.file) {
+      const up = await uploadBuffer(req.file, 'profiles');
+      picture_url = up.secure_url;
+    }
     const updateFields = [];
     const values = [];
     let paramIndex = 1;

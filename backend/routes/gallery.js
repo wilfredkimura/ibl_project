@@ -4,6 +4,7 @@ const db = require("../db");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const upload = require("../middleware/upload");
+const { uploadBuffer } = require("../utils/uploadToCloudinary");
 
 // Public get (optionally filter by album_id)
 router.get("/", async (req, res) => {
@@ -53,7 +54,8 @@ router.post(
 
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
-        const picture_url = `/uploads/${f.filename}`;
+        const up = await uploadBuffer(f, 'gallery');
+        const picture_url = up.secure_url;
         const thisCaption = caps[i] ?? caps[0] ?? null;
         await db.query(
           "INSERT INTO gallery (picture_url, caption, date, album_id) VALUES ($1, $2, NOW(), $3)",
@@ -87,7 +89,11 @@ router.put(
   async (req, res) => {
     try {
       const { caption, album_id } = req.body;
-      const picture_url = req.file ? `/uploads/${req.file.filename}` : null;
+      let picture_url = null;
+      if (req.file) {
+        const up = await uploadBuffer(req.file, 'gallery');
+        picture_url = up.secure_url;
+      }
       await db.query(
         "UPDATE gallery SET caption = COALESCE($1, caption), album_id = COALESCE($2, album_id), picture_url = COALESCE($3, picture_url) WHERE id = $4",
         [caption ?? null, album_id ?? null, picture_url, req.params.id]
