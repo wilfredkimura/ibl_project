@@ -1,13 +1,18 @@
 services:
   - type: web
-    name: ibl_project
+    name: ysc_stdominic
     plan: free
     env: node
     buildCommand: >-
       cd backend && npm install && 
       cd ../frontend && npm install --include=dev && npm run build && 
       rm -rf ../backend/dist && cp -r dist ../backend/dist
-    startCommand: cd backend && npm run migrate && node server.js
+    startCommand: >-
+      cd backend && 
+      echo "==== Running database migrations ==== " && 
+      node scripts/migrate.js && 
+      echo "==== Starting server ==== " && 
+      node server.js
     envVars:
       - key: NODE_ENV
         value: production
