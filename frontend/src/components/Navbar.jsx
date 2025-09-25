@@ -60,6 +60,11 @@ const Navbar = () => {
           <Box sx={{ flexGrow: 1 }} />
           {isSmall ? (
             <>
+              {user && (
+                <Typography variant="body2" sx={{ mr: 1, opacity: 0.9 }}>
+                  Welcome, <strong>{user.name}</strong>!
+                </Typography>
+              )}
               <IconButton color="inherit" onClick={toggleDrawer(true)} aria-label="menu">
                 <MenuIcon />
               </IconButton>
