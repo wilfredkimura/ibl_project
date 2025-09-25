@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://ibl-project.onrender.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://ibl-project.onrender.com/uploads/:path*" }
+  ]
+}
