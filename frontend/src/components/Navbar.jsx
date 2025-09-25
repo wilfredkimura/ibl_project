@@ -21,6 +21,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { UserButton, SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -75,12 +76,27 @@ const Navbar = () => {
                     ))}
                   </List>
                   <Divider />
+                  {/* Clerk auth controls (mobile) */}
                   <List>
-                    <ListItem disablePadding>
-                      <ListItemButton component="a" href="/api/health" target="_blank" rel="noopener noreferrer">
-                        <ListItemText primary="API Health" />
-                      </ListItemButton>
-                    </ListItem>
+                    <SignedIn>
+                      <ListItem disablePadding>
+                        <Box sx={{ px: 2, py: 1 }}>
+                          <UserButton appearance={{ elements: { userButtonBox: { marginLeft: 0 } } }} />
+                        </Box>
+                      </ListItem>
+                    </SignedIn>
+                    <SignedOut>
+                      <ListItem disablePadding>
+                        <ListItemButton component={RouterLink} to="/sign-in">
+                          <ListItemText primary="Clerk Sign In" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem disablePadding>
+                        <ListItemButton component={RouterLink} to="/sign-up">
+                          <ListItemText primary="Clerk Sign Up" />
+                        </ListItemButton>
+                      </ListItem>
+                    </SignedOut>
                   </List>
                   <Divider />
                   <List>
@@ -98,6 +114,14 @@ const Navbar = () => {
                         </ListItem>
                       </>
                     )}
+                  </List>
+                  <Divider />
+                  <List>
+                    <ListItem disablePadding>
+                      <ListItemButton component="a" href="/api/health" target="_blank" rel="noopener noreferrer">
+                        <ListItemText primary="API Health" />
+                      </ListItemButton>
+                    </ListItem>
                   </List>
                 </Box>
               </Drawer>
@@ -122,6 +146,20 @@ const Navbar = () => {
                   {item.label}
                 </Link>
               ))}
+              {/* Clerk auth controls (desktop) */}
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <SignedOut>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <SignInButton mode="modal">
+                    <Button variant="outlined" color="inherit">Clerk Sign In</Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button variant="contained" color="secondary">Clerk Sign Up</Button>
+                  </SignUpButton>
+                </Stack>
+              </SignedOut>
               <Link
                 component="a"
                 href="/api/health"

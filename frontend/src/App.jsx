@@ -15,6 +15,19 @@ import GalleryAlbums from "./components/GalleryAlbums.jsx";
 import GalleryAlbum from "./components/GalleryAlbum.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
+import { SignedIn, SignedOut, RedirectToSignIn, SignIn, SignUp } from "@clerk/clerk-react";
+
+function ClerkGuard({ children, adminOnly = false }) {
+  // For now we only check that a Clerk session exists; adminOnly still uses your existing PrivateRoute.
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
+}
 
 function App() {
   return (
@@ -33,6 +46,8 @@ function App() {
             <Route path="/gallery/ungrouped" element={<GalleryAlbum ungrouped />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
+            <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
             <Route
               path="/admin"
               element={
@@ -44,25 +59,25 @@ function App() {
             <Route
               path="/profile"
               element={
-                <PrivateRoute>
+                <ClerkGuard>
                   <Profile />
-                </PrivateRoute>
+                </ClerkGuard>
               }
             />
             <Route
               path="/profile/:userId"
               element={
-                <PrivateRoute>
+                <ClerkGuard>
                   <Profile />
-                </PrivateRoute>
+                </ClerkGuard>
               }
             />
             <Route
               path="/members"
               element={
-                <PrivateRoute>
+                <ClerkGuard>
                   <Members />
-                </PrivateRoute>
+                </ClerkGuard>
               }
             />
           </Routes>
