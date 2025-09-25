@@ -76,6 +76,14 @@ const Navbar = () => {
                   </List>
                   <Divider />
                   <List>
+                    <ListItem disablePadding>
+                      <ListItemButton component="a" href="/api/health" target="_blank" rel="noopener noreferrer">
+                        <ListItemText primary="API Health" />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+                  <Divider />
+                  <List>
                     {user ? (
                       <ListItem disablePadding>
                         <ListItemButton onClick={logout}><ListItemText primary="Logout" /></ListItemButton>
@@ -114,6 +122,16 @@ const Navbar = () => {
                   {item.label}
                 </Link>
               ))}
+              <Link
+                component="a"
+                href="/api/health"
+                target="_blank"
+                rel="noopener noreferrer"
+                underline="none"
+                sx={{ color: 'inherit', opacity: 0.8 }}
+              >
+                API Health
+              </Link>
               {user ? (
                 <Button variant="outlined" color="inherit" onClick={logout}>Logout</Button>
               ) : (

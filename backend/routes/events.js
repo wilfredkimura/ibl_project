@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
     const result = await db.query("SELECT * FROM events ORDER BY date");
     res.json(result.rows);
   } catch (err) {
+    console.error("[events] GET / error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -26,6 +27,7 @@ router.post("/", auth, admin, upload.single("picture"), async (req, res) => {
     );
     res.json({ msg: "Event added" });
   } catch (err) {
+    console.error("[events] POST / error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -40,6 +42,7 @@ router.put("/:id", auth, admin, upload.single("picture"), async (req, res) => {
     );
     res.json({ msg: "Event updated" });
   } catch (err) {
+    console.error("[events] PUT /:id error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -49,6 +52,7 @@ router.delete("/:id", auth, admin, async (req, res) => {
     await db.query("DELETE FROM events WHERE id = $1", [req.params.id]);
     res.json({ msg: "Event deleted" });
   } catch (err) {
+    console.error("[events] DELETE /:id error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });

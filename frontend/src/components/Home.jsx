@@ -37,7 +37,7 @@ const Home = () => {
           justifyContent: "center",
           color: "#fff",
           textAlign: "center",
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(/images/ycs-hero.jpeg)`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(/images/ysc-hero.jpeg)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

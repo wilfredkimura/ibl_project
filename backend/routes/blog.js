@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
     const result = await db.query("SELECT * FROM blogs ORDER BY date DESC");
     res.json(result.rows);
   } catch (err) {
+    console.error("[blog] GET / error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -26,6 +27,7 @@ router.post("/", auth, admin, upload.single("picture"), async (req, res) => {
     );
     res.json({ msg: "Blog added" });
   } catch (err) {
+    console.error("[blog] POST / error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -40,6 +42,7 @@ router.put("/:id", auth, admin, upload.single("picture"), async (req, res) => {
     );
     res.json({ msg: "Blog updated" });
   } catch (err) {
+    console.error("[blog] PUT /:id error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -49,6 +52,7 @@ router.delete("/:id", auth, admin, async (req, res) => {
     await db.query("DELETE FROM blogs WHERE id = $1", [req.params.id]);
     res.json({ msg: "Blog deleted" });
   } catch (err) {
+    console.error("[blog] DELETE /:id error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });

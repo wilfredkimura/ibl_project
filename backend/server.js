@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const db = require("./db");
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,17 @@ app.use("/api/blog", require("./routes/blog"));
 app.use("/api/events", require("./routes/events"));
 app.use("/api/gallery", require("./routes/gallery"));
 app.use("/api/users", require("./routes/users"));
+
+// Lightweight health check (and DB check)
+app.get("/api/health", async (req, res) => {
+  try {
+    const now = await db.query("SELECT NOW() as now");
+    res.json({ ok: true, now: now.rows?.[0]?.now });
+  } catch (err) {
+    console.error("[health] DB check failed:", err.stack || err);
+    res.status(500).json({ ok: false, error: "DB check failed" });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 // Add this to server.js before the app.listen() call

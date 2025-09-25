@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ysc_stdominic
+    name: ibl_project
     plan: free
     env: node
     buildCommand: >-
@@ -21,6 +21,6 @@ services:
 
 databases:
   - name: ysc_stdominic
-    databaseName: ysc_stdominic
-    user: ysc_stdominic_user
+    databaseName: ysc_stdominic_phw5
+    user: ysc_stdominic_phw5_user
     plan: free

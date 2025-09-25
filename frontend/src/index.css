@@ -1,19 +1,6 @@
 /* Minimalist Brown and Beige Theme */
-/* Self-hosted Ubuntu Mono */
-@font-face {
-  font-family: 'Ubuntu Mono';
-  src: url('/fonts/UbuntuMono-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Ubuntu Mono';
-  src: url('/fonts/UbuntuMono-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* Use Google Fonts for Ubuntu Mono to avoid missing self-hosted files */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap');
 :root {
   --ycs-primary: #A0522D; /* Sienna (Medium Brown) */
   --ycs-accent: #8B4513; /* SaddleBrown (Darker Brown) */

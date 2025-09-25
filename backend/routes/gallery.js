@@ -20,6 +20,7 @@ router.get("/", async (req, res) => {
     }
     res.json(result.rows);
   } catch (err) {
+    console.error("[gallery] GET / error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -61,6 +62,7 @@ router.post(
       }
       res.json({ msg: `Added ${files.length} image(s) to gallery` });
     } catch (err) {
+      console.error("[gallery] POST / error:", err.stack || err);
       res.status(500).json({ msg: "Server error" });
     }
   }
@@ -71,6 +73,7 @@ router.delete("/:id", auth, admin, async (req, res) => {
     await db.query("DELETE FROM gallery WHERE id = $1", [req.params.id]);
     res.json({ msg: "Image deleted" });
   } catch (err) {
+    console.error("[gallery] DELETE /:id error:", err.stack || err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -91,6 +94,7 @@ router.put(
       );
       res.json({ msg: "Image updated" });
     } catch (err) {
+      console.error("[gallery] PUT /:id error:", err.stack || err);
       res.status(500).json({ msg: "Server error" });
     }
   }
