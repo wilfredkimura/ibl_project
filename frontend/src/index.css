@@ -1,19 +1,27 @@
-/* Minimalist Brown and Beige Theme */
-/* Use Google Fonts for Ubuntu Mono to avoid missing self-hosted files */
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap');
+/* New palette + font imports per request */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap');
+
 :root {
-  --ycs-primary: #A0522D; /* Sienna (Medium Brown) */
-  --ycs-accent: #8B4513; /* SaddleBrown (Darker Brown) */
-  --ycs-hover: #D2B48C; /* Tan (Lighter Brown/Gold) */
-  --ycs-dark: #3D2B1F; /* Dark Brown for footer */
-  --ycs-light: #F5F5DC; /* Beige Background */
-  --ycs-text: #654321; /* Dark Brown for text */
+  /* Provided palette */
+  --first-color: #f0ece2;  /* light background */
+  --second-color: #dfd3c3; /* surface */
+  --third-color: #c7b198;  /* primary */
+  --fourth-color: #596e79; /* dark accent / text */
+
+  /* Semantic mapping for existing styles */
+  --ycs-primary: var(--third-color);
+  --ycs-accent: var(--fourth-color);
+  --ycs-hover: #b89f83; /* hover tint for primary */
+  --ycs-dark: var(--fourth-color);
+  --ycs-light: var(--first-color);
+  --ycs-text: var(--fourth-color);
 }
 
 /* Global background and text */
 body {
   background-color: var(--ycs-light);
   color: var(--ycs-text);
+  font-family: Helvetica, 'Open Sans', Lato, Montserrat, Arial, sans-serif;
 }
 
 /* Navbar - Brown Theme */
@@ -113,7 +121,7 @@ a:hover,
 
 /* Tab content surface */
 .ycs-tab-surface {
-  background: #fff;
+  background: var(--second-color);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 10px;
   padding: 1rem;
@@ -203,11 +211,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: "Ubuntu Mono", monospace;
   background-color: var(--ycs-light);
   color: var(--ycs-text);
   line-height: 1.6;
-  color: var(--ycs-text);
 }
 
 #root {
@@ -274,9 +280,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Ubuntu Mono", monospace;
+  font-family: Montserrat, Helvetica, 'Open Sans', Lato, sans-serif;
   font-weight: 700;
-  color: var(--ycs-primary);
+  color: var(--ycs-accent);
 }
 
 /* Lazy-loaded images */
@@ -302,7 +308,7 @@ footer {
 footer .container { max-width: 1200px; }
 
 footer h5 {
-  font-family: "Ubuntu Mono", monospace;
+  font-family: Montserrat, Helvetica, 'Open Sans', Lato, sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
   margin-bottom: 1rem;
@@ -310,7 +316,7 @@ footer h5 {
 }
 
 footer p {
-  font-family: "Ubuntu Mono", monospace;
+  font-family: 'Open Sans', Helvetica, Lato, Montserrat, sans-serif;
   font-size: 0.95rem;
   line-height: 1.6;
   color: #e0e0e0;
@@ -318,7 +324,7 @@ footer p {
 }
 
 footer .nav-link {
-  font-family: "Ubuntu Mono", monospace;
+  font-family: 'Open Sans', Helvetica, Lato, Montserrat, sans-serif;
   font-size: 0.9rem;
   color: #e0e0e0 !important;
   padding: 0.25rem 0;
