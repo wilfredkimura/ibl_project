@@ -21,6 +21,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import NewNavbar from "./Navbar/index.jsx";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -165,4 +166,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NewNavbar;

@@ -1,0 +1,47 @@
+Refactoring Exercise — YCS St. Dominic Project
+
+Author: Full‑stack refactor notes for frontend/src/components/Navbar.jsx
+Date: 2025-10-13
+
+1) The principle applied
+Single Responsibility Principle (SRP) with Separation of Concerns (SoC).
+
+2) The problem before refactoring (1–2 sentences)
+`frontend/src/components/Navbar.jsx` combined several responsibilities in one file: role‑aware navigation composition, active‑route detection, mobile drawer state/behavior, and Material UI presentation. This tight coupling made it harder to test, reason about, and extend (e.g., adding routes, changing active logic, or reusing nav logic elsewhere).
+
+3) The change made (short snippet)
+- Extracted pure navigation logic into a hook `useNavItems(user)` that returns the role‑aware items and an `isActive` helper.
+- Split presentation into focused components (`NavbarBrand`, `NavbarLinks`, `NavbarDrawer`) and kept a thin orchestrator in `Navbar/index.jsx` to wire media queries and handlers. The original `Navbar.jsx` now re‑exports the new component to avoid import churn.
+
+Snippet — logic extraction:
+// frontend/src/components/Navbar/useNavItems.js
+export function useNavItems(user) {
+  const location = useLocation();
+  const items = [
+    { label: 'Leaders', to: '/leaders' },
+    { label: 'Blog', to: '/blog' },
+    { label: 'Events', to: '/events' },
+    { label: 'Gallery', to: '/gallery' },
+  ];
+  if (user) items.push({ label: 'Members', to: '/members' }, { label: 'Profile', to: '/profile' });
+  if (user?.is_admin) items.push({ label: 'Admin Dashboard', to: '/admin' });
+  const isActive = (to) => location.pathname === to || location.pathname.startsWith(to + '/');
+}
+
+4) The benefit gained
+- Clarity: Smaller, purpose‑specific files separate logic from UI.
+- Reusability: `useNavItems` can power other navigations (sidebar/footer) without duplication.
+  - Easier testing: Logic is unit‑testable; UI is snapshot‑testable.
+  - Extensibility: Adding routes or changing active‑link logic requires minimal, localized changes.
+
+---
+
+Principle: Single Responsibility Principle (SRP)
+
+Before: My `Navbar.jsx` component both computed role‑aware navigation (including active‑route detection) and handled UI concerns like mobile drawer state and Material UI layout in one file.
+
+Change: Extracted navigation logic into a pure hook `useNavItems(user)` and split presentation into `NavbarBrand.jsx`, `NavbarLinks.jsx`, and `NavbarDrawer.jsx`, with `Navbar/index.jsx` as the orchestrator. `Navbar.jsx` now re‑exports the new component to avoid changing imports.
+
+Benefit: Clearer structure, easier unit testing of nav logic, reusable items across surfaces (e.g., sidebar), and simpler future changes to routes or active‑link rules.
+
+GitHub Repository: __________________________

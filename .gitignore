@@ -1,0 +1,104 @@
+# ===== Global OS/Editor =====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# ===== Environment & Secrets (security) =====
+.env
+.env.local
+.env.*.local
+*.env
+*.env.*
+# Common secret key files
+*.keystore
+*.jks
+*.pem
+*.key
+*.p12
+*.cer
+*.crt
+*.der
+*.pub
+
+# ===== Node/JS Monorepo =====
+node_modules/
+**/node_modules/
+
+# Build outputs
+build/
+dist/
+.out/
+.next/
+.nuxt/
+.cache/
+.temp/
+coverage/
+
+# Lockfiles should be committed; do not ignore package-lock.json/yarn.lock/pnpm-lock.yaml
+
+# ===== Frontend (React/Vite/Cra) =====
+frontend/.cache/
+frontend/build/
+frontend/dist/
+frontend/coverage/
+
+# ===== Backend (Node/Express common) =====
+backend/.cache/
+backend/dist/
+backend/build/
+backend/coverage/
+backend/logs/
+backend/tmp/
+
+# ===== Mobile (React Native / Expo) =====
+# Ignore entire mobile workspace (requested)
+mobile/
+# Expo
+.expo/
+.expo-shared/
+# React Native Android
+mobile/android/.gradle/
+mobile/android/.idea/
+mobile/android/local.properties
+mobile/android/app/build/
+mobile/android/build/
+# React Native iOS
+mobile/ios/build/
+mobile/ios/DerivedData/
+mobile/ios/*.xcworkspace/xcuserdata/
+mobile/ios/**/xcuserdata/
+
+# Metro/Packager cache
+mobile/.metro-cache/
+
+# ===== Misc tools =====
+.tmp/
+.temp/
+.cache-loader/
+
+# ===== OS generated =====
+Icon?
+
+# ===== Images/Design exports (optional) =====
+*.sketch
+*.fig
+*.psd
+
+# ===== Archives =====
+*.zip
+*.tar
+*.gz
+*.tgz
+*.rar

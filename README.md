@@ -1,8 +1,8 @@
-# YCS St. Dominic — Web + Mobile App
+# YCS St. Dominic — Web App
 
-Youth Serving Christ (YCS) at St. Dominic Catholic Church — a full‑stack application with a responsive website and a companion mobile app. The web app is built with React (Vite + Material UI) and the backend is Node.js + Express with PostgreSQL. The mobile app is built with Expo (React Native) and mirrors the website features and UI (parity) including an Admin dashboard.
+Youth Serving Christ (YCS) at St. Dominic Catholic Church — a full‑stack web application with a responsive website. The web app is built with React (Vite + Material UI) and the backend is Node.js + Express with PostgreSQL.
 
-This document covers project structure, local setup (web, backend, and mobile), PostgreSQL, deployment to Render (free tier), and recent feature updates (gallery albums/lightbox, admin thumbnails, native date/time pickers, parity notes).
+This document covers project structure, local setup (web and backend), PostgreSQL, deployment to Render (free tier), and recent feature updates (gallery albums/lightbox, admin thumbnails).
 
 ---
 
@@ -11,8 +11,7 @@ This document covers project structure, local setup (web, backend, and mobile), 
 - **Frontend (Web)**: React (Vite), React Router, Material UI, Framer Motion, Swiper, React Hook Form
 - **Backend**: Node.js, Express, CORS, Static uploads
 - **Database**: PostgreSQL
-- **Auth**: JWT (web: localStorage, mobile: SecureStore)
-- **Mobile**: Expo (React Native), React Navigation, React Native Paper, react-native-image-viewing, @react-native-community/datetimepicker, @react-native-picker/picker
+- **Auth**: JWT (localStorage)
 - **Deployment**: Render (free tier), render.yaml blueprint
 
 ---
@@ -45,7 +44,14 @@ ibl_project/
 │  │  ├─ index.css              # global CSS (self-host fonts, footer)
 │  │  ├─ context/AuthContext.jsx
 │  │  ├─ components/
-│  │  │  ├─ Navbar.jsx, Footer.jsx
+│  │  │  ├─ Navbar.jsx                 # re-exports modular Navbar
+│  │  │  ├─ Navbar/                    # SRP refactor (logic + presentational)
+│  │  │  │  ├─ index.jsx               # orchestrator
+│  │  │  │  ├─ useNavItems.js          # role-aware items + isActive
+│  │  │  │  ├─ NavbarBrand.jsx         # logo/title/admin chip
+│  │  │  │  ├─ NavbarLinks.jsx         # desktop links
+│  │  │  │  └─ NavbarDrawer.jsx        # mobile drawer
+│  │  │  ├─ Footer.jsx
 │  │  │  ├─ Home.jsx, Blog.jsx, Events.jsx, Gallery.jsx
 │  │  │  ├─ GalleryAlbums.jsx, GalleryAlbum.jsx  # Albums list + album lightbox with keyboard nav and x-of-y
 │  │  │  ├─ Register.jsx, Login.jsx, Profile.jsx, Members.jsx, Leaders.jsx
@@ -53,30 +59,21 @@ ibl_project/
 │  │  │  └─ Admin/* (management UIs)
 │  └─ package.json              # Vite scripts
 │
-├─ mobile/
-│  ├─ app.json                  # Expo config (extra.apiBaseUrl)
-│  ├─ App.js                    # Root (AuthProvider, PaperProvider/theme)
-│  ├─ index.js                  # registerRootComponent
-│  ├─ package.json              # Expo dependencies
-│  └─ src/
-│     ├─ api.js                 # axios baseURL, JWT interceptor, absoluteUrl
-│     ├─ context/AuthContext.js # JWT storage (SecureStore), fetch /api/profile for is_admin
-│     ├─ navigation/AppNavigator.js
-│     ├─ screens/
-│     │  ├─ HomeScreen.js, BlogDetailScreen.js, EventsScreen.js,
-│     │  ├─ LeadersScreen.js, ProfileScreen.js,
-│     │  ├─ GalleryAlbumsScreen.js, GalleryScreen.js (pinch-to-zoom, x-of-y)
-│     │  └─ admin/
-│     │     ├─ AdminDashboardScreen.js
-│     │     ├─ AdminUsersScreen.js
-│     │     ├─ AdminBlogsScreen.js (thumbnails)
-│     │     ├─ AdminEventsScreen.js (native DateTimePicker + thumbnails)
-│     │     ├─ AdminGalleryScreen.js (albums + uploads)
-│     │     └─ AdminLeadersScreen.js (thumbnails)
-│     └─ ...
-│
 └─ README.md                    # This file
 ```
+
+---
+
+## Recent Refactor: Navbar (SRP + SoC)
+
+- The previous `frontend/src/components/Navbar.jsx` mixed navigation composition, active-route detection, drawer state, and UI.
+- Refactor split responsibilities:
+  - Logic: `frontend/src/components/Navbar/useNavItems.js` provides role-aware items and `isActive`.
+  - Presentational: `NavbarBrand.jsx`, `NavbarLinks.jsx`, `NavbarDrawer.jsx`.
+  - Orchestrator: `Navbar/index.jsx` wires media query and handlers.
+- `Navbar.jsx` now simply re-exports the modular Navbar to avoid changing import paths throughout the app.
+
+Benefits: clearer structure, easier testing (logic vs UI), reusable nav items, simpler future changes to routes/active rules.
 
 ---
 
@@ -368,6 +365,10 @@ Database
 Notes
 - Ensure CORS is configured for your production frontend.
 - Store uploads on durable storage for production (S3 or persistent volume). Free tier ephemeral storage may be wiped on redeploy.
+
+Security/Repo hygiene
+- `.gitignore` includes environment files (`.env`, variants), keys/certs, caches, and build artifacts.
+- The entire `mobile/` workspace is ignored for this repository to prevent committing large platform-specific build directories or secrets from mobile tooling.
 
 ---
 
