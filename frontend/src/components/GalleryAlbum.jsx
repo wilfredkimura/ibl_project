@@ -1,23 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import {
-  Container,
-  Grid,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  CircularProgress,
-  Stack,
-  Dialog,
-  DialogContent,
-  DialogActions,
-  IconButton,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 
 export default function GalleryAlbum({ ungrouped = false }) {
   const { id } = useParams();
@@ -155,81 +138,149 @@ export default function GalleryAlbum({ ungrouped = false }) {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-        <Typography variant="h5">{title}</Typography>
-        <Button variant="outlined" href="/gallery">Back to Albums</Button>
-      </Stack>
+    <div className="container" style={{ padding: "2rem 1.5rem", maxWidth: "1024px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          marginBottom: "1rem",
+        }}
+      >
+        <h2 style={{ margin: 0 }}>{title}</h2>
+        <a href="/gallery" className="btn btn-outline">
+          Back to Albums
+        </a>
+      </div>
 
       {loading ? (
-        <Stack alignItems="center" sx={{ my: 4 }}>
-          <CircularProgress />
-        </Stack>
+        <div style={{ textAlign: "center", padding: "2rem 0", opacity: 0.8 }}>Loading photos…</div>
       ) : (
-        <Grid container spacing={2}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "1rem",
+          }}
+        >
           {(items || []).map((img, i) => (
-            <Grid item md={3} sm={4} xs={6} key={img.id}>
-              <Card>
-                <CardActionArea onClick={() => openViewer(i)}>
-                  <CardMedia
-                    component="img"
-                    sx={{ height: { xs: 140, sm: 180 } }}
-                    image={img.picture_url || "https://via.placeholder.com/300?text=YCS+Activity"}
-                    alt={img.caption || "YCS Activity"}
-                  />
-                  <CardContent>
-                    <Typography variant="body2" textAlign="center">
-                      {img.caption || "A moment from YCS at St. Dominic"}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
+            <div
+              key={img.id}
+              className="card glass-surface"
+              style={{ overflow: "hidden", cursor: "pointer" }}
+              onClick={() => openViewer(i)}
+            >
+              <img
+                src={img.picture_url || "https://via.placeholder.com/300?text=YCS+Activity"}
+                alt={img.caption || "YCS Activity"}
+                style={{ width: "100%", height: 180, objectFit: "cover" }}
+              />
+              <div className="card-body">
+                <p
+                  className="card-text"
+                  style={{ fontSize: "0.85rem", textAlign: "center" }}
+                >
+                  {img.caption || "A moment from YCS at St. Dominic"}
+                </p>
+              </div>
+            </div>
           ))}
-        </Grid>
+        </div>
       )}
 
-      <Dialog open={open} onClose={closeViewer} maxWidth="lg" fullWidth>
-        <DialogActions sx={{ justifyContent: "space-between" }}>
-          <Button onClick={() => { setIndex((i) => Math.max(0, i - 1)); resetZoom(); }} disabled={index <= items.length ? index <= 0 : true}>
-            Previous
-          </Button>
-          <Stack sx={{ flex: 1, textAlign: 'center', px: 2 }}>
-            <Typography variant="caption" color="text.secondary">{items.length ? `${index + 1} of ${items.length}` : ''}</Typography>
-            <Typography variant="body2">{current?.caption || ""}</Typography>
-          </Stack>
-          <Button onClick={() => { setIndex((i) => Math.min(items.length - 1, i + 1)); resetZoom(); }} disabled={index >= items.length - 1}>
-            Next
-          </Button>
-          <IconButton onClick={closeViewer} aria-label="close"><CloseIcon /></IconButton>
-        </DialogActions>
-        <DialogContent sx={{ p: 0, bgcolor: "black" }}>
+      {open && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.9)",
+            zIndex: 1100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={closeViewer}
+        >
           <div
-            onWheel={onWheel}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseLeave}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            style={{ width: "100%", height: "80vh", overflow: "hidden", cursor: scale > 1 ? "grab" : "default" }}
+            className="glass-surface"
+            style={{
+              maxWidth: "1024px",
+              width: "100%",
+              borderRadius: "1rem",
+              padding: "0.75rem 1rem 1rem",
+            }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {current && (
-              <img
-                src={current.picture_url || "https://via.placeholder.com/1200x800?text=YCS+Activity"}
-                alt={current.caption || "YCS Activity"}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: scale > 1 ? "cover" : "contain",
-                  transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-                  transition: dragRef.current.dragging ? "none" : "transform 0.1s ease-out",
-                }}
-              />
-            )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => { setIndex((i) => Math.max(0, i - 1)); resetZoom(); }}
+                disabled={index <= items.length ? index <= 0 : true}
+              >
+                Previous
+              </button>
+              <div style={{ flex: 1, textAlign: "center", fontSize: "0.85rem" }}>
+                <div style={{ opacity: 0.75 }}>
+                  {items.length ? `${index + 1} of ${items.length}` : ""}
+                </div>
+                <div>{current?.caption || ""}</div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => { setIndex((i) => Math.min(items.length - 1, i + 1)); resetZoom(); }}
+                disabled={index >= items.length - 1}
+              >
+                Next
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={closeViewer}
+                aria-label="close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div
+              onWheel={onWheel}
+              onMouseDown={onMouseDown}
+              onMouseMove={onMouseMove}
+              onMouseUp={onMouseUp}
+              onMouseLeave={onMouseLeave}
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              style={{ width: "100%", height: "80vh", overflow: "hidden", cursor: scale > 1 ? "grab" : "default", background: "black", borderRadius: "0.75rem" }}
+            >
+              {current && (
+                <img
+                  src={current.picture_url || "https://via.placeholder.com/1200x800?text=YCS+Activity"}
+                  alt={current.caption || "YCS Activity"}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: scale > 1 ? "cover" : "contain",
+                    transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+                    transition: dragRef.current.dragging ? "none" : "transform 0.1s ease-out",
+                  }}
+                />
+              )}
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </Container>
+        </div>
+      )}
+    </div>
   );
 }

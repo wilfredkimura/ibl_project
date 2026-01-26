@@ -1,24 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import {
-  Alert,
-  Button,
-  Container,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Stack,
-} from "@mui/material";
 import RichTextEditor from "../common/RichTextEditor.jsx";
 
 const BlogManagement = () => {
@@ -92,52 +74,118 @@ const BlogManagement = () => {
   };
 
   return (
-    <Container disableGutters>
-      <Stack spacing={2}>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Button variant="contained" onClick={() => setShowModal(true)}>Add Blog</Button>
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+    <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {error && (
+          <div className="glass-surface" style={{ padding: "0.75rem 1rem", borderLeft: "3px solid var(--clr-danger-a40)" }}>
+            <strong style={{ display: "block", marginBottom: "0.25rem" }}>Error</strong>
+            <span style={{ fontSize: "0.9rem" }}>{error}</span>
+          </div>
+        )}
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => setShowModal(true)}
+          style={{ alignSelf: "flex-start" }}
+        >
+          Add Blog
+        </button>
+        <div className="glass-surface" style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Title</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Date</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {blogs.map((blog) => (
-                <TableRow key={blog.id} hover>
-                  <TableCell>{blog.title}</TableCell>
-                  <TableCell>{new Date(blog.date).toLocaleDateString()}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
-                      <Button size="small" variant="outlined" onClick={() => editBlog(blog)}>Edit</Button>
-                      <Button size="small" color="error" variant="contained" onClick={() => deleteBlog(blog.id)}>Delete</Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
+                <tr key={blog.id} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <td style={{ padding: "0.5rem" }}>{blog.title}</td>
+                  <td style={{ padding: "0.5rem" }}>{new Date(blog.date).toLocaleDateString()}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => editBlog(blog)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        style={{ background: "var(--clr-danger-a40)" }}
+                        onClick={() => deleteBlog(blog.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      <Dialog open={showModal} onClose={() => setShowModal(false)} fullWidth maxWidth="md">
-        <DialogTitle>{editing ? "Edit Blog" : "Add Blog"}</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2} component="form" id="blog-form" onSubmit={handleSubmit(onSubmit)}>
-            <TextField label="Title" {...register("title")} required />
-            <RichTextEditor value={contentHtml} onChange={setContentHtml} />
-            <TextField type="file" inputProps={{ accept: 'image/*' }} {...register("picture")} />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button type="submit" form="blog-form" variant="contained">{editing ? "Update" : "Add"}</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="glass-surface"
+            style={{ maxWidth: "960px", width: "100%", borderRadius: "1rem", padding: "1.25rem 1.5rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: "0.75rem" }}>{editing ? "Edit Blog" : "Add Blog"}</h3>
+            <form
+              id="blog-form"
+              onSubmit={handleSubmit(onSubmit)}
+              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            >
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Title</span>
+                <input className="form-input" required {...register("title")} />
+              </label>
+              <div>
+                <RichTextEditor value={contentHtml} onChange={setContentHtml} />
+              </div>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Picture</span>
+                <input type="file" accept="image/*" {...register("picture")} />
+              </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editing ? "Update" : "Add"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

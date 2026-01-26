@@ -1,54 +1,66 @@
 import React from 'react';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import { Link as RouterLink } from 'react-router-dom';
 
 export default function NavbarLinks({ items, isActive, user, onLogout }) {
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
+    <nav
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+      }}
+    >
       {items.map((item) => (
-        <Link
+        <RouterLink
           key={item.to}
-          component={RouterLink}
           to={item.to}
-          underline="none"
-          sx={{
-            color: 'inherit',
+          className="navbar-link"
+          style={{
             fontWeight: isActive(item.to) ? 700 : 500,
-            bgcolor: isActive(item.to) ? 'action.selected' : 'transparent',
-            px: 1,
-            py: 0.5,
-            borderRadius: 1,
+            background: isActive(item.to) ? 'rgba(255,255,255,0.12)' : 'transparent',
           }}
         >
           {item.label}
-        </Link>
+        </RouterLink>
       ))}
       {user && (
-        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+        <span style={{ opacity: 0.9, fontSize: '0.9rem' }}>
           Welcome, <strong>{user.name}</strong>!
-        </Typography>
+        </span>
       )}
-      <Link
-        component="a"
+      <a
         href="/api/health"
         target="_blank"
         rel="noopener noreferrer"
-        underline="none"
-        sx={{ color: 'inherit', opacity: 0.8 }}
+        className="navbar-link"
       >
         API Health
-      </Link>
+      </a>
       {user ? (
-        <Button variant="outlined" color="inherit" onClick={onLogout}>Logout</Button>
+        <button
+          type="button"
+          onClick={onLogout}
+          style={{
+            borderRadius: '999px',
+            border: '1px solid rgba(255,255,255,0.3)',
+            padding: '0.35rem 0.9rem',
+            background: 'transparent',
+            color: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
+          Logout
+        </button>
       ) : (
-        <Stack direction="row" spacing={1}>
-          <Link component={RouterLink} to="/login" underline="none" sx={{ color: 'inherit' }}>Login</Link>
-          <Link component={RouterLink} to="/register" underline="none" sx={{ color: 'inherit' }}>Register</Link>
-        </Stack>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <RouterLink to="/login" className="navbar-link">
+            Login
+          </RouterLink>
+          <RouterLink to="/register" className="navbar-link">
+            Register
+          </RouterLink>
+        </div>
       )}
-    </Stack>
+    </nav>
   );
 }

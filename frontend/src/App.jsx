@@ -17,14 +17,35 @@ import AdminDashboard from "./components/AdminDashboard.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import { SignedIn, SignedOut, RedirectToSignIn, SignIn, SignUp } from "@clerk/clerk-react";
 
+const clerkEnabled = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+const SignedInWrapper = clerkEnabled
+  ? SignedIn
+  : ({ children }) => <>{children}</>;
+
+const SignedOutWrapper = clerkEnabled
+  ? SignedOut
+  : ({ children }) => null;
+
+const RedirectToSignInWrapper = clerkEnabled
+  ? RedirectToSignIn
+  : () => null;
+
+const SignInWrapper = clerkEnabled
+  ? SignIn
+  : () => <Login />;
+
+const SignUpWrapper = clerkEnabled
+  ? SignUp
+  : () => <Register />;
+
 function ClerkGuard({ children, adminOnly = false }) {
-  // For now we only check that a Clerk session exists; adminOnly still uses your existing PrivateRoute.
   return (
     <>
-      <SignedIn>{children}</SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
+      <SignedInWrapper>{children}</SignedInWrapper>
+      <SignedOutWrapper>
+        <RedirectToSignInWrapper />
+      </SignedOutWrapper>
     </>
   );
 }
@@ -46,8 +67,8 @@ function App() {
             <Route path="/gallery/ungrouped" element={<GalleryAlbum ungrouped />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
-            <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+            <Route path="/sign-in/*" element={<SignInWrapper routing="path" path="/sign-in" />} />
+            <Route path="/sign-up/*" element={<SignUpWrapper routing="path" path="/sign-up" />} />
             <Route
               path="/admin"
               element={

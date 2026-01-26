@@ -1,30 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import {
-  Alert,
-  Button,
-  Container,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Stack,
-  Typography,
-} from "@mui/material";
 
 const GalleryManagement = () => {
   const [images, setImages] = useState([]);
@@ -39,6 +15,7 @@ const GalleryManagement = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [perFileCaptions, setPerFileCaptions] = useState([]);
   const { register, handleSubmit, reset } = useForm();
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchAlbums();
@@ -124,6 +101,14 @@ const GalleryManagement = () => {
   };
 
   const onSubmit = async (data) => {
+    console.log("Submitting form:", data);
+    console.log("Selected files:", selectedFiles);
+
+    if (!selectedFiles || selectedFiles.length === 0) {
+      alert("Please select at least one image to upload.");
+      return;
+    }
+
     const formData = new FormData();
     if (data.album_id) formData.append("album_id", data.album_id);
     // Use selectedFiles state so we can associate captions
@@ -143,6 +128,7 @@ const GalleryManagement = () => {
       setSelectedFiles([]);
       setPerFileCaptions([]);
     } catch (err) {
+      console.error("Upload error:", err);
       const msg = err.response?.data?.message || err.response?.data?.msg || err.message || "Operation failed";
       setError(msg);
     }
@@ -199,213 +185,461 @@ const GalleryManagement = () => {
   };
 
   return (
-    <Container disableGutters>
-      <Stack spacing={2}>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <Button variant="contained" onClick={() => setShowModal(true)}>Add Image</Button>
-          </Grid>
-          <Grid item>
-            <Button variant="outlined" onClick={() => setShowAlbumModal(true)}>New Album</Button>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel id="album-filter-label">Filter by album</InputLabel>
-              <Select
-                labelId="album-filter-label"
-                label="Filter by album"
+    <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {error && (
+          <div className="glass-surface" style={{ padding: "0.75rem 1rem", borderLeft: "3px solid var(--clr-danger-a40)" }}>
+            <strong style={{ display: "block", marginBottom: "0.25rem" }}>Error</strong>
+            <span style={{ fontSize: "0.9rem" }}>{error}</span>
+          </div>
+        )}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            alignItems: "center",
+          }}
+        >
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setShowModal(true)}
+          >
+            Add Image
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={() => setShowAlbumModal(true)}
+          >
+            New Album
+          </button>
+          <div style={{ minWidth: "220px", flex: "1 1 220px" }}>
+            <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
+              <span>Filter by album</span>
+              <select
+                className="form-input"
                 value={selectedAlbumId}
                 onChange={(e) => setSelectedAlbumId(e.target.value)}
               >
-                <MenuItem value="">All Albums</MenuItem>
+                <option value="">All Albums</option>
                 {albums.map((a) => (
-                  <MenuItem key={a.id} value={a.id}>
-                    {a.title} ({new Date(a.date).toLocaleDateString()})
-                  </MenuItem>
+                  <option key={a.id} value={a.id}>
+                    {a.title} ({a.date ? new Date(a.date).toLocaleDateString() : ""})
+                  </option>
                 ))}
-              </Select>
-            </FormControl>
-          </Grid>
+              </select>
+            </label>
+          </div>
           {selectedAlbumId && (
-            <Grid item>
-              <Button variant="outlined" color="error" onClick={deleteAlbum}>Delete Album</Button>
-            </Grid>
+            <button
+              type="button"
+              className="btn btn-outline"
+              style={{ color: "var(--clr-danger-a40)" }}
+              onClick={deleteAlbum}
+            >
+              Delete Album
+            </button>
           )}
-        </Grid>
+        </div>
 
-        <Typography variant="h6">Albums</Typography>
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Photos</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <h3 style={{ marginTop: "1rem" }}>Albums</h3>
+        <div className="glass-surface" style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Title</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Date</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Photos</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {albums.map((a) => (
-                <TableRow key={a.id} hover>
-                  <TableCell>{a.title}</TableCell>
-                  <TableCell>{a.date ? new Date(a.date).toLocaleDateString() : ""}</TableCell>
-                  <TableCell>{a.photo_count ?? 0}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
-                      <Button size="small" variant="outlined" onClick={() => startEditAlbum(a)}>Edit</Button>
-                      <Button size="small" color="error" variant="contained" onClick={() => deleteAlbumById(a.id)}>Delete</Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
+                <tr key={a.id} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <td style={{ padding: "0.5rem" }}>{a.title}</td>
+                  <td style={{ padding: "0.5rem" }}>{a.date ? new Date(a.date).toLocaleDateString() : ""}</td>
+                  <td style={{ padding: "0.5rem" }}>{a.photo_count ?? 0}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => startEditAlbum(a)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        style={{ background: "var(--clr-danger-a40)" }}
+                        onClick={() => deleteAlbumById(a.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
               {albums.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">No albums yet</TableCell>
-                </TableRow>
+                <tr>
+                  <td colSpan={4} style={{ textAlign: "center", padding: "0.75rem" }}>No albums yet</td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </tbody>
+          </table>
+        </div>
 
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Image</TableCell>
-                <TableCell>Caption</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <div className="glass-surface" style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Image</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Caption</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {images.map((img) => (
-                <TableRow key={img.id} hover>
-                  <TableCell>
+                <tr key={img.id} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <td style={{ padding: "0.5rem" }}>
                     <img src={img.picture_url} alt={img.caption} style={{ width: 100 }} />
-                  </TableCell>
-                  <TableCell>{img.caption}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
-                      <Button size="small" variant="outlined" onClick={() => startEdit(img)}>Edit</Button>
-                      <Button size="small" color="error" variant="contained" onClick={() => deleteImage(img.id)}>Delete</Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                  <td style={{ padding: "0.5rem" }}>{img.caption}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => startEdit(img)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        style={{ background: "var(--clr-danger-a40)" }}
+                        onClick={() => deleteImage(img.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Add Images Dialog */}
-      <Dialog open={showModal} onClose={() => setShowModal(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Add Image</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2} component="form" id="add-image-form" onSubmit={handleSubmit(onSubmit)}>
-            <Button variant="outlined" component="label">
-              Select Pictures
-              <input hidden type="file" multiple {...register("pictures")}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="glass-surface"
+            style={{ maxWidth: "720px", width: "100%", borderRadius: "1rem", padding: "1.25rem 1.5rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: "0.75rem" }}>Add Image</h3>
+            <form
+              id="add-image-form"
+              onSubmit={handleSubmit(onSubmit)}
+              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            >
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  cursor: "pointer",
+                }}
+              >
+                <span>Select Pictures</span>
+              </button>
+              <input
+                ref={fileInputRef}
+                hidden
+                type="file"
+                multiple
                 onChange={(e) => {
                   const files = Array.from(e.target.files || []);
+                  console.log("Files selected:", files);
                   setSelectedFiles(files);
                   setPerFileCaptions(Array(files.length).fill(""));
-                }} />
-            </Button>
-            {selectedFiles.length > 0 && (
-              <Stack spacing={1}>
-                <Typography fontWeight={600}>Captions (optional)</Typography>
-                {selectedFiles.map((file, idx) => (
-                  <Grid container spacing={2} alignItems="center" key={idx}>
-                    <Grid item xs={12} md={5}>
-                      <Typography noWrap title={file.name}>{file.name}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={7}>
-                      <TextField
-                        size="small"
-                        placeholder="Caption for this image"
-                        value={perFileCaptions[idx] || ""}
-                        onChange={(e) => {
-                          const next = [...perFileCaptions];
-                          next[idx] = e.target.value;
-                          setPerFileCaptions(next);
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                ))}
-              </Stack>
-            )}
-            <FormControl fullWidth>
-              <InputLabel id="album-label">Album</InputLabel>
-              <Select labelId="album-label" label="Album" defaultValue={selectedAlbumId} {...register("album_id")}>
-                <MenuItem value="">(No album)</MenuItem>
-                {albums.map((a) => (
-                  <MenuItem key={a.id} value={a.id}>{a.title}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button type="submit" form="add-image-form" variant="contained">Add</Button>
-        </DialogActions>
-      </Dialog>
+                }}
+              />
+              {selectedFiles.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <strong>Captions (optional)</strong>
+                  {selectedFiles.map((file, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div style={{ flex: "1 1 40%" }}>
+                        <span title={file.name} style={{ fontSize: "0.85rem" }}>
+                          {file.name}
+                        </span>
+                      </div>
+                      <div style={{ flex: "1 1 60%" }}>
+                        <input
+                          className="form-input"
+                          style={{ fontSize: "0.85rem" }}
+                          placeholder="Caption for this image"
+                          value={perFileCaptions[idx] || ""}
+                          onChange={(e) => {
+                            const next = [...perFileCaptions];
+                            next[idx] = e.target.value;
+                            setPerFileCaptions(next);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Album</span>
+                <select
+                  className="form-input"
+                  {...register("album_id")}
+                >
+                  <option value="">(No album)</option>
+                  {albums.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* New Album Dialog */}
-      <Dialog open={showAlbumModal} onClose={() => setShowAlbumModal(false)} fullWidth maxWidth="sm">
-        <DialogTitle>New Album</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2} component="form" id="new-album-form" onSubmit={createAlbum}>
-            <TextField name="title" label="Title" placeholder="Album title" required />
-            <TextField name="date" label="Date" type="date" InputLabelProps={{ shrink: true }} />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowAlbumModal(false)}>Cancel</Button>
-          <Button type="submit" form="new-album-form" variant="contained">Create Album</Button>
-        </DialogActions>
-      </Dialog>
+      {showAlbumModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setShowAlbumModal(false)}
+        >
+          <div
+            className="glass-surface"
+            style={{ maxWidth: "480px", width: "100%", borderRadius: "1rem", padding: "1.25rem 1.5rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: "0.75rem" }}>New Album</h3>
+            <form
+              id="new-album-form"
+              onSubmit={createAlbum}
+              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            >
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Title</span>
+                <input name="title" className="form-input" placeholder="Album title" required />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Date</span>
+                <input name="date" type="date" className="form-input" />
+              </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowAlbumModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Create Album
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Album Dialog */}
-      <Dialog open={showEditAlbumModal} onClose={() => setShowEditAlbumModal(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Edit Album</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2} component="form" id="edit-album-form" onSubmit={submitEditAlbum}>
-            <TextField name="title" label="Title" defaultValue={albumEditing?.title || ""} required />
-            <TextField name="date" label="Date" type="date" InputLabelProps={{ shrink: true }} defaultValue={albumEditing?.date ? new Date(albumEditing.date).toISOString().slice(0,10) : ""} />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowEditAlbumModal(false)}>Cancel</Button>
-          <Button type="submit" form="edit-album-form" variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+      {showEditAlbumModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setShowEditAlbumModal(false)}
+        >
+          <div
+            className="glass-surface"
+            style={{ maxWidth: "480px", width: "100%", borderRadius: "1rem", padding: "1.25rem 1.5rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: "0.75rem" }}>Edit Album</h3>
+            <form
+              id="edit-album-form"
+              onSubmit={submitEditAlbum}
+              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            >
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Title</span>
+                <input
+                  name="title"
+                  className="form-input"
+                  defaultValue={albumEditing?.title || ""}
+                  required
+                />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Date</span>
+                <input
+                  name="date"
+                  type="date"
+                  className="form-input"
+                  defaultValue={albumEditing?.date ? new Date(albumEditing.date).toISOString().slice(0, 10) : ""}
+                />
+              </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowEditAlbumModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Image Dialog */}
-      <Dialog open={!!editItem} onClose={() => setEditItem(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Edit Image</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2} component="form" id="edit-image-form" onSubmit={submitEdit}>
-            <TextField name="caption" label="Caption" defaultValue={editItem?.caption || ""} />
-            <FormControl fullWidth>
-              <InputLabel id="edit-album-select">Album</InputLabel>
-              <Select labelId="edit-album-select" name="album_id" label="Album" defaultValue={editItem?.album_id || ""}>
-                <MenuItem value="">(No album)</MenuItem>
-                {albums.map((a) => (
-                  <MenuItem key={a.id} value={a.id}>{a.title}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Button variant="outlined" component="label">Replace Picture<input hidden type="file" name="picture" /></Button>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditItem(null)}>Cancel</Button>
-          <Button type="submit" form="edit-image-form" variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      {!!editItem && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setEditItem(null)}
+        >
+          <div
+            className="glass-surface"
+            style={{ maxWidth: "720px", width: "100%", borderRadius: "1rem", padding: "1.25rem 1.5rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: "0.75rem" }}>Edit Image</h3>
+            <form
+              id="edit-image-form"
+              onSubmit={submitEdit}
+              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            >
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Caption</span>
+                <input
+                  name="caption"
+                  className="form-input"
+                  defaultValue={editItem?.caption || ""}
+                />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Album</span>
+                <select
+                  name="album_id"
+                  className="form-input"
+                  defaultValue={editItem?.album_id || ""}
+                >
+                  <option value="">(No album)</option>
+                  {albums.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label
+                className="btn btn-outline"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  cursor: "pointer",
+                }}
+              >
+                <span>Replace Picture</span>
+                <input hidden type="file" name="picture" />
+              </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-outline" onClick={() => setEditItem(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

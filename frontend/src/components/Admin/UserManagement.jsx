@@ -1,19 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Alert,
-  Button,
-  Container,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Stack,
-  Typography,
-} from "@mui/material";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -55,46 +41,66 @@ const UserManagement = () => {
   };
 
   return (
-    <Container disableGutters>
-      <Stack spacing={2}>
+    <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         {error && (
-          <Alert severity="error">{error}</Alert>
+          <div className="glass-surface" style={{ padding: "0.75rem 1rem", borderLeft: "3px solid var(--clr-accent-a40)" }}>
+            <strong style={{ display: "block", marginBottom: "0.25rem" }}>Error</strong>
+            <span style={{ fontSize: "0.9rem" }}>{error}</span>
+          </div>
         )}
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Username</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Admin</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <div className="glass-surface" style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>ID</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Username</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Email</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Admin</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {users.map((u) => (
-                <TableRow key={u.id} hover>
-                  <TableCell>{u.id}</TableCell>
-                  <TableCell>{u.username}</TableCell>
-                  <TableCell>{u.email}</TableCell>
-                  <TableCell>{u.is_admin ? "Yes" : "No"}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
-                      <Button size="small" variant="outlined" onClick={() => toggleAdmin(u.id)}>
+                <tr key={u.id} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <td style={{ padding: "0.5rem" }}>{u.id}</td>
+                  <td style={{ padding: "0.5rem" }}>{u.username}</td>
+                  <td style={{ padding: "0.5rem" }}>{u.email}</td>
+                  <td style={{ padding: "0.5rem" }}>{u.is_admin ? "Yes" : "No"}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => toggleAdmin(u.id)}
+                      >
                         Toggle Admin
-                      </Button>
-                      <Button size="small" color="error" variant="contained" onClick={() => deleteUser(u.id)}>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        style={{ background: "var(--clr-danger-a40)" }}
+                        onClick={() => deleteUser(u.id)}
+                      >
                         Delete
-                      </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
-    </Container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 

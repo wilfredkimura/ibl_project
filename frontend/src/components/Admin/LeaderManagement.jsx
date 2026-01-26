@@ -1,24 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import {
-  Alert,
-  Button,
-  Container,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Stack,
-} from "@mui/material";
 
 const LeaderManagement = () => {
   const [leaders, setLeaders] = useState([]);
@@ -86,59 +68,127 @@ const LeaderManagement = () => {
   };
 
   return (
-    <Container disableGutters>
-      <Stack spacing={2}>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Button variant="contained" onClick={() => setShowModal(true)}>
+    <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {error && (
+          <div className="glass-surface" style={{ padding: "0.75rem 1rem", borderLeft: "3px solid var(--clr-danger-a40)" }}>
+            <strong style={{ display: "block", marginBottom: "0.25rem" }}>Error</strong>
+            <span style={{ fontSize: "0.9rem" }}>{error}</span>
+          </div>
+        )}
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => setShowModal(true)}
+          style={{ alignSelf: "flex-start" }}
+        >
           Add Leader
-        </Button>
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Position</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        </button>
+        <div className="glass-surface" style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Name</th>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Position</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {leaders.map((leader) => (
-                <TableRow key={leader.id} hover>
-                  <TableCell>{leader.name}</TableCell>
-                  <TableCell>{leader.position}</TableCell>
-                  <TableCell align="right">
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end" alignItems={{ xs: 'stretch', sm: 'center' }}>
-                      <Button size="small" variant="outlined" onClick={() => editLeader(leader)}>
+                <tr key={leader.id} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <td style={{ padding: "0.5rem" }}>{leader.name}</td>
+                  <td style={{ padding: "0.5rem" }}>{leader.position}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => editLeader(leader)}
+                      >
                         Edit
-                      </Button>
-                      <Button size="small" color="error" variant="contained" onClick={() => deleteLeader(leader.id)}>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        style={{ background: "var(--clr-danger-a40)" }}
+                        onClick={() => deleteLeader(leader.id)}
+                      >
                         Delete
-                      </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      <Dialog open={showModal} onClose={() => setShowModal(false)} fullWidth maxWidth="sm">
-        <DialogTitle>{editing ? "Edit Leader" : "Add Leader"}</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2} component="form" id="leader-form" onSubmit={handleSubmit(onSubmit)}>
-            <TextField label="Name" {...register("name")} required />
-            <TextField label="Position" {...register("position")} />
-            <TextField label="Bio" multiline minRows={3} {...register("bio")} />
-            <TextField type="file" inputProps={{ accept: 'image/*' }} {...register("picture")} />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button type="submit" form="leader-form" variant="contained">{editing ? "Update" : "Add"}</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="glass-surface"
+            style={{ maxWidth: "720px", width: "100%", borderRadius: "1rem", padding: "1.25rem 1.5rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: "0.75rem" }}>{editing ? "Edit Leader" : "Add Leader"}</h3>
+            <form
+              id="leader-form"
+              onSubmit={handleSubmit(onSubmit)}
+              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+            >
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Name</span>
+                <input className="form-input" required {...register("name")} />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Position</span>
+                <input className="form-input" {...register("position")} />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Bio</span>
+                <textarea
+                  className="form-input"
+                  rows={3}
+                  {...register("bio")}
+                />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <span style={{ fontSize: "0.9rem" }}>Picture</span>
+                <input type="file" accept="image/*" {...register("picture")} />
+              </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editing ? "Update" : "Add"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

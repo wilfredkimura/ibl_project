@@ -1,9 +1,4 @@
 import { useState } from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
 import UserManagement from "./Admin/UserManagement.jsx";
 import LeaderManagement from "./Admin/LeaderManagement.jsx";
 import BlogManagement from "./Admin/BlogManagement.jsx";
@@ -13,27 +8,55 @@ import GalleryManagement from "./Admin/GalleryManagement.jsx";
 const AdminDashboard = () => {
   const [key, setKey] = useState("users");
 
-  const handleChange = (_e, newValue) => setKey(newValue);
+  const handleChange = (value) => setKey(value);
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-        <Tabs value={key} onChange={handleChange} aria-label="Admin Tabs" variant="scrollable" allowScrollButtonsMobile>
-          <Tab value="users" label="User Management" />
-          <Tab value="leaders" label="Leader Management" />
-          <Tab value="blogs" label="Blog Management" />
-          <Tab value="events" label="Event Management" />
-          <Tab value="gallery" label="Gallery Management" />
-        </Tabs>
-      </Box>
-      <Paper sx={{ p: 2 }}>
+    <div className="container" style={{ maxWidth: "960px" }}>
+      <nav className="ycs-tabs nav nav-tabs mb-3" aria-label="Admin Tabs">
+        <button
+          type="button"
+          className={`nav-link ${key === "users" ? "active" : ""}`}
+          onClick={() => handleChange("users")}
+        >
+          User Management
+        </button>
+        <button
+          type="button"
+          className={`nav-link ${key === "leaders" ? "active" : ""}`}
+          onClick={() => handleChange("leaders")}
+        >
+          Leader Management
+        </button>
+        <button
+          type="button"
+          className={`nav-link ${key === "blogs" ? "active" : ""}`}
+          onClick={() => handleChange("blogs")}
+        >
+          Blog Management
+        </button>
+        <button
+          type="button"
+          className={`nav-link ${key === "events" ? "active" : ""}`}
+          onClick={() => handleChange("events")}
+        >
+          Event Management
+        </button>
+        <button
+          type="button"
+          className={`nav-link ${key === "gallery" ? "active" : ""}`}
+          onClick={() => handleChange("gallery")}
+        >
+          Gallery Management
+        </button>
+      </nav>
+      <div className="ycs-tab-surface glass-surface">
         {key === "users" && <UserManagement />}
         {key === "leaders" && <LeaderManagement />}
         {key === "blogs" && <BlogManagement />}
         {key === "events" && <EventManagement />}
         {key === "gallery" && <GalleryManagement />}
-      </Paper>
-    </Container>
+      </div>
+    </div>
   );
 };
 

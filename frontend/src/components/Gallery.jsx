@@ -1,21 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import {
-  Container,
-  Grid,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  CircularProgress,
-  Stack,
-  Dialog,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
 
 const Gallery = () => {
   const [albums, setAlbums] = useState([]);
@@ -66,155 +51,231 @@ const Gallery = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <Stack spacing={1} sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h4">YCS Gallery</Typography>
-          <Typography variant="body1" color="text.secondary">
-            Explore moments from Youth Serving Christ (YCS) activities at St. Dominic Catholic Church, St. Theresa Kalimoni Parish, including Masses, retreats, and community service.
-          </Typography>
-        </Stack>
+    <div className="container section-centered" style={{ padding: "2rem 1.5rem", maxWidth: "960px" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
+          <div className="academia-label">Volume VI</div>
+          <h2 style={{ marginBottom: "0.5rem" }}>YCS Gallery</h2>
+          <p className="dropcap-intro" style={{ maxWidth: "48rem", margin: "0 auto", opacity: 0.9 }}>
+            Explore moments from Youth Serving Christ (YCS) activities at St. Dominic Catholic Church, St. Theresa Kalimoni Parish,
+            including Masses, retreats, and community service.
+          </p>
+          <div className="ornate-divider" aria-hidden="true" />
+        </div>
       </motion.div>
 
       {/* Album grid */}
-      <Grid container spacing={2} sx={{ mb: 4 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "1.25rem",
+          marginBottom: "2rem",
+        }}
+      >
         {/* Ungrouped pseudo-album */}
-        <Grid item md={4} sm={6} xs={12}>
-          <Card>
-            <CardActionArea onClick={openUngrouped}>
-              <CardContent>
-                <Typography variant="h6">Ungrouped Photos</Typography>
-                <Typography variant="body2" color="text.secondary">Photos without an album</Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
+        <div
+          className="card glass-surface ornate-frame"
+          style={{ cursor: "pointer", display: "flex", flexDirection: "column" }}
+          onClick={openUngrouped}
+        >
+          <div className="card-body">
+            <h3 className="card-title" style={{ marginBottom: "0.25rem" }}>Ungrouped Photos</h3>
+            <p className="card-text" style={{ fontSize: "0.9rem", opacity: 0.85 }}>
+              Photos without an album
+            </p>
+          </div>
+        </div>
+
         {albums.length === 0 ? (
-          <Grid item xs={12}>
-            <Typography>No albums yet. Check back soon.</Typography>
-          </Grid>
+          <div style={{ gridColumn: "1 / -1", opacity: 0.7, textAlign: "center" }}>
+            No albums yet. Check back soon.
+          </div>
         ) : (
           albums.map((album, index) => (
-            <Grid item md={4} sm={6} xs={12} key={album.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Card>
-                  <CardActionArea onClick={() => openAlbum(album)}>
-                    <CardMedia
-                      component="img"
-                      sx={{ height: { xs: 140, sm: 180 } }}
-                      image={album.cover_url || "https://via.placeholder.com/600x300?text=Album+Cover"}
-                      alt={album.title}
-                    />
-                    <CardContent>
-                      <Typography variant="h6">{album.title}</Typography>
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        {album.date && new Date(album.date).toLocaleDateString()}
-                      </Typography>
-                      <Stack direction="row" justifyContent="space-between" mt={1}>
-                        <Typography variant="caption" color="text.secondary">
-                          {album.photo_count ?? 0} {Number(album.photo_count) === 1 ? "photo" : "photos"}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">View →</Typography>
-                      </Stack>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </motion.div>
-            </Grid>
+            <motion.div
+              key={album.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="card glass-surface ornate-frame"
+              style={{ overflow: "hidden", cursor: "pointer", display: "flex", flexDirection: "column" }}
+              onClick={() => openAlbum(album)}
+            >
+              <div className="arch-top" style={{ height: 180 }}>
+                <img
+                  src={album.cover_url || "https://via.placeholder.com/600x300?text=Album+Cover"}
+                  alt={album.title}
+                  className="academia-photo"
+                />
+              </div>
+              <div className="card-body">
+                <h3 className="card-title" style={{ marginBottom: "0.25rem" }}>{album.title}</h3>
+                <small className="text-muted" style={{ display: "block", marginBottom: "0.35rem" }}>
+                  {album.date && new Date(album.date).toLocaleDateString()}
+                </small>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "0.8rem",
+                    opacity: 0.8,
+                  }}
+                >
+                  <span>
+                    {album.photo_count ?? 0} {Number(album.photo_count) === 1 ? "photo" : "photos"}
+                  </span>
+                  <span>View </span>
+                </div>
+              </div>
+            </motion.div>
           ))
         )}
-      </Grid>
+      </div>
 
       {/* Expanded album view */}
       {selectedAlbum && (
-        <Stack spacing={2}>
-          <Typography variant="h5">
-            {selectedAlbum === "ungrouped" ? "Ungrouped Photos" : selectedAlbum.title}
-          </Typography>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ marginBottom: "0.75rem" }}>
+            <div className="academia-label">Volume VI</div>
+            <h3 style={{ marginBottom: "0.25rem" }}>
+              {selectedAlbum === "ungrouped" ? "Ungrouped Photos" : selectedAlbum.title}
+            </h3>
+            <div className="ornate-divider" aria-hidden="true" />
+          </div>
           {loadingAlbumId === (selectedAlbum === "ungrouped" ? "ungrouped" : selectedAlbum.id) ? (
-            <Stack alignItems="center" sx={{ my: 4 }}>
-              <CircularProgress />
-            </Stack>
+            <div style={{ textAlign: "center", padding: "2rem 0", opacity: 0.8 }}>Loading photos…</div>
           ) : (
-            <Grid container spacing={2}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+                gap: "1rem",
+                marginBottom: "1rem",
+              }}
+            >
               {(selectedAlbum === "ungrouped" ? ungroupedImages || [] : albumImages[selectedAlbum.id] || []).map((img, idx) => (
-                <Grid item md={3} sm={4} xs={6} key={img.id}>
-                  <Card>
-                    <CardActionArea onClick={() => { setCurrentIndex(idx); setViewerOpen(true); }}>
-                      <CardMedia
-                        component="img"
-                        sx={{ height: { xs: 140, sm: 180 } }}
-                        image={img.picture_url || "https://via.placeholder.com/300?text=YCS+Activity"}
-                        alt={img.caption || "YCS Activity"}
-                      />
-                      <CardContent>
-                        <Typography variant="body2" textAlign="center">
-                          {img.caption || "A moment from YCS at St. Dominic"}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
+                <div
+                  key={img.id}
+                  className="card glass-surface"
+                  style={{ overflow: "hidden", cursor: "pointer" }}
+                  onClick={() => { setCurrentIndex(idx); setViewerOpen(true); }}
+                >
+                  <div className="arch-top" style={{ height: 160 }}>
+                    <img
+                      src={img.picture_url || "https://via.placeholder.com/300?text=YCS+Activity"}
+                      alt={img.caption || "YCS Activity"}
+                      className="academia-photo"
+                    />
+                  </div>
+                  <div className="card-body">
+                    <p
+                      className="card-text"
+                      style={{ fontSize: "0.85rem", textAlign: "center" }}
+                    >
+                      {img.caption || "A moment from YCS at St. Dominic"}
+                    </p>
+                  </div>
+                </div>
               ))}
-            </Grid>
+            </div>
           )}
-          <Stack direction="row" justifyContent="flex-end">
-            <Button variant="outlined" onClick={() => setSelectedAlbum(null)}>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => setSelectedAlbum(null)}
+            >
               Close album
-            </Button>
-          </Stack>
-        </Stack>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Fullscreen viewer */}
-      <Dialog open={viewerOpen} onClose={() => setViewerOpen(false)} maxWidth="md" fullWidth>
-        <DialogContent sx={{ p: 0, bgcolor: "black" }}>
-          {(() => {
-            const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
-            const item = list[currentIndex];
-            if (!item) return null;
-            return (
-              <img
-                src={item.picture_url || "https://via.placeholder.com/1200x800?text=YCS+Activity"}
-                alt={item.caption || "YCS Activity"}
-                style={{ width: "100%", height: "80vh", objectFit: "contain" }}
-              />
-            );
-          })()}
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "space-between" }}>
-          <Button
-            onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            disabled={currentIndex <= 0}
+      {viewerOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.9)",
+            zIndex: 1100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+          }}
+          onClick={() => setViewerOpen(false)}
+        >
+          <div
+            className="glass-surface"
+            style={{
+              maxWidth: "960px",
+              width: "100%",
+              padding: "0.75rem 1rem 1rem",
+              borderRadius: "1rem",
+            }}
+            onClick={(e) => e.stopPropagation()}
           >
-            Previous
-          </Button>
-          <Typography variant="body2" sx={{ flex: 1, textAlign: "center", px: 2 }}>
             {(() => {
               const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
               const item = list[currentIndex];
-              return item?.caption || "";
+              if (!item) return null;
+              return (
+                <>
+                  <div style={{ background: "black", borderRadius: "0.75rem", overflow: "hidden" }}>
+                    <img
+                      src={item.picture_url || "https://via.placeholder.com/1200x800?text=YCS+Activity"}
+                      alt={item.caption || "YCS Activity"}
+                      style={{ width: "100%", height: "70vh", objectFit: "contain" }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: "0.75rem",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+                      disabled={currentIndex <= 0}
+                    >
+                      Previous
+                    </button>
+                    <p style={{ flex: 1, textAlign: "center", margin: 0, fontSize: "0.9rem" }}>
+                      {item.caption || ""}
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      onClick={() => {
+                        const listInner = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
+                        setCurrentIndex((i) => Math.min(listInner.length - 1, i + 1));
+                      }}
+                      disabled={(() => {
+                        const listInner = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
+                        return currentIndex >= listInner.length - 1;
+                      })()}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </>
+              );
             })()}
-          </Typography>
-          <Button
-            onClick={() => {
-              const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
-              setCurrentIndex((i) => Math.min(list.length - 1, i + 1));
-            }}
-            disabled={(() => {
-              const list = selectedAlbum === "ungrouped" ? (ungroupedImages || []) : (albumImages[selectedAlbum?.id] || []);
-              return currentIndex >= list.length - 1;
-            })()}
-          >
-            Next
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

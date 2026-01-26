@@ -3,16 +3,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Alert,
-  Stack,
-  Typography,
-  Avatar,
-} from "@mui/material";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 const Profile = () => {
@@ -88,56 +78,122 @@ const Profile = () => {
   const isOwnProfile = !userId || userId === String(user?.id);
 
   return (
-    <Container maxWidth="sm">
+    <div className="container section-centered" style={{ maxWidth: "640px", padding: "2rem 1.5rem" }}>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <div style={{ textAlign: 'center', marginBottom: 16 }}>
-          <Typography variant="h4">
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <div className="academia-label">Volume X</div>
+          <h2 style={{ marginBottom: "0.5rem" }}>
             {isOwnProfile ? "Your Profile" : profile?.name ? `${profile.name}'s Profile` : "Member Profile"}
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          </h2>
+          <p className="dropcap-intro" style={{ maxWidth: "36rem", margin: "0 auto", opacity: 0.9 }}>
             {isOwnProfile
               ? "Manage your Youth Serving Christ (YCS) profile at St. Dominic Catholic Church."
               : "Learn more about this YCS member at St. Dominic Catholic Church, St. Theresa Kalimoni Parish."}
-          </Typography>
+          </p>
+          <div className="ornate-divider" aria-hidden="true" />
         </div>
       </motion.div>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {!error && !profile && <Typography>Loading...</Typography>}
+      {error && (
+        <div className="glass-surface" style={{ padding: "0.75rem 1rem", marginBottom: "1rem", borderLeft: "3px solid var(--clr-danger-a40)" }}>
+          <strong style={{ display: "block", marginBottom: "0.25rem" }}>Error</strong>
+          <span style={{ fontSize: "0.9rem" }}>{error}</span>
+        </div>
+      )}
+      {!error && !profile && <p>Loading...</p>}
 
       {profile && (
         <>
-          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-          <Paper sx={{ p: 3, mx: 'auto' }}>
-            <Stack alignItems="center" spacing={2} sx={{ mb: 2 }}>
-              <Avatar src={profile.picture_url || "/images/ycs-member-placeholder.png"} alt={profile.name} sx={{ width: 120, height: 120 }} />
-              <Typography variant="h6">{profile.name || "YCS Member"}</Typography>
-            </Stack>
+          {success && (
+            <div className="glass-surface" style={{ padding: "0.75rem 1rem", marginBottom: "1rem", borderLeft: "3px solid var(--clr-accent-a40)" }}>
+              <strong style={{ display: "block", marginBottom: "0.25rem" }}>Profile updated</strong>
+              <span style={{ fontSize: "0.9rem" }}>{success}</span>
+            </div>
+          )}
+          <div className="card glass-surface" style={{ padding: "1.5rem 1.75rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+              <div
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: "2px solid rgba(255,255,255,0.4)",
+                }}
+              >
+                <img
+                  src={profile.picture_url || "/images/ycs-member-placeholder.png"}
+                  alt={profile.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              <h3 style={{ margin: 0 }}>{profile.name || "YCS Member"}</h3>
+            </div>
+
             {editMode && isOwnProfile ? (
-              <Stack spacing={2} component="form" onSubmit={handleSubmit(onSubmit)}>
-                <TextField label="Name" {...register("name")} placeholder="Enter your name" />
-                <TextField label="Bio" multiline minRows={3} {...register("bio")} placeholder="Tell us about yourself" />
-                <Button variant="outlined" component="label">
-                  Upload Profile Picture
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+              >
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                  <span style={{ fontSize: "0.9rem" }}>Name</span>
+                  <input
+                    className="form-input"
+                    placeholder="Enter your name"
+                    {...register("name")}
+                  />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                  <span style={{ fontSize: "0.9rem" }}>Bio</span>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    placeholder="Tell us about yourself"
+                    {...register("bio")}
+                  />
+                </label>
+                <label
+                  className="btn btn-outline"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span>Upload Profile Picture</span>
                   <input hidden type="file" accept="image/*" {...register("picture")} />
-                </Button>
-                <Stack direction="row" spacing={1} justifyContent="flex-end">
-                  <Button onClick={() => setEditMode(false)}>Cancel</Button>
-                  <Button type="submit" variant="contained">Save</Button>
-                </Stack>
-              </Stack>
+                </label>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
+                  <button type="button" className="btn btn-outline" onClick={() => setEditMode(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Save
+                  </button>
+                </div>
+              </form>
             ) : (
               <>
-                <Typography variant="body1" sx={{ mb: 2 }}>{profile.bio || "A dedicated member of our YCS community."}</Typography>
+                <p className="dropcap-intro" style={{ marginBottom: "1rem", opacity: 0.95 }}>
+                  {profile.bio || "A dedicated member of our YCS community."}
+                </p>
                 {isOwnProfile && (
-                  <Button variant="contained" onClick={() => setEditMode(true)}>Edit Profile</Button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setEditMode(true)}
+                  >
+                    Edit Profile
+                  </button>
                 )}
               </>
             )}
-          </Paper>
+          </div>
         </>
       )}
-    </Container>
+    </div>
   );
 };
 

@@ -2,23 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  Container,
-  Grid,
-  Card,
-  CardActionArea,
-  CardMedia,
-  CardContent,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Stack,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
@@ -98,88 +81,176 @@ const Blog = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedBlog, selectedIndex, blogs]);
 
-  const theme = useTheme();
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-
   return (
-    <Container maxWidth="md">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <Stack spacing={1} sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h4">YCS Reflections</Typography>
-          <Typography variant="body1" color="text.secondary">
-            Explore reflections, testimonies, and insights from our Youth Serving Christ (YCS) community at St. Dominic Catholic Church, St. Theresa Kalimoni Parish, as we grow in faith together.
-          </Typography>
-        </Stack>
+    <div className="container section-centered" style={{ padding: "2rem 1.5rem", maxWidth: "840px" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
+          <div className="academia-label">Volume V</div>
+          <h2 style={{ marginBottom: "0.5rem" }}>YCS Reflections</h2>
+          <p className="dropcap-intro" style={{ maxWidth: "48rem", margin: "0 auto", opacity: 0.9 }}>
+            Explore reflections, testimonies, and insights from our Youth Serving Christ (YCS) community at St. Dominic Catholic Church,
+            St. Theresa Kalimoni Parish, as we grow in faith together.
+          </p>
+          <div className="ornate-divider" aria-hidden="true" />
+        </div>
       </motion.div>
-      <Grid container spacing={2}>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "1.25rem",
+        }}
+      >
         {blogs.length === 0 ? (
-          <Grid item xs={12}>
-            <Typography>No blog posts yet. Discover our latest reflections!</Typography>
-          </Grid>
+          <div style={{ gridColumn: "1 / -1", opacity: 0.7, textAlign: "center" }}>
+            No blog posts yet. Discover our latest reflections!
+          </div>
         ) : (
           blogs.map((blog, index) => (
-            <Grid item md={6} xs={12} key={blog.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+            <motion.div
+              key={blog.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="card glass-surface"
+              style={{ overflow: "hidden", cursor: "pointer", display: "flex", flexDirection: "column" }}
+              onClick={() => openBlog(blog, index)}
+            >
+              <div className="arch-top" style={{ height: 180 }}>
+                <img
+                  src={blog.picture_url || "https://via.placeholder.com/600x300?text=YCS+Blog"}
+                  alt={blog.title}
+                  className="academia-photo"
+                />
+              </div>
+              <div className="card-body" style={{ flex: 1 }}>
+                <h3
+                  className="card-title"
+                  style={{
+                    fontSize: "1.1rem",
+                    marginBottom: "0.25rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {blog.title || "Untitled Post"}
+                </h3>
+                <small className="text-muted" style={{ display: "block", marginBottom: "0.5rem" }}>
+                  {blog.date && new Date(blog.date).toLocaleDateString()}
+                </small>
+                <p
+                  className="card-text"
+                  style={{ fontSize: "0.9rem", opacity: 0.85 }}
+                >
+                  {truncateWords(stripHtml(blog.content || "Discover our latest reflections!"), 60)}
+                </p>
+              </div>
+              <div
+                style={{
+                  padding: "0.5rem 1rem 0.9rem",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  fontSize: "0.75rem",
+                  opacity: 0.7,
+                }}
               >
-                <Card>
-                  <CardActionArea onClick={() => openBlog(blog, index)}>
-                    <CardMedia
-                      component="img"
-                      sx={{ height: { xs: 140, sm: 180 } }}
-                      image={blog.picture_url || "https://via.placeholder.com/600x300?text=YCS+Blog"}
-                      alt={blog.title}
-                    />
-                    <CardContent>
-                      <Typography variant="h6">{blog.title || "Untitled Post"}</Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
-                        {new Date(blog.date).toLocaleDateString()}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {truncateWords(stripHtml(blog.content || "Discover our latest reflections!"), 100)}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                  <CardContent sx={{ pt: 0, display: 'flex', justifyContent: 'flex-end' }}>
-                    <Typography variant="caption" color="text.secondary">Read more →</Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
+                Read more 
+              </div>
+            </motion.div>
           ))
         )}
-      </Grid>
-      <Dialog open={!!selectedBlog} onClose={closeBlog} fullScreen>
-        <DialogTitle>
-          {selectedBlog?.title || "Untitled Post"}
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-            {selectedBlog?.date && new Date(selectedBlog.date).toLocaleString()}
-          </Typography>
-        </DialogTitle>
-        <DialogContent dividers>
-          {selectedBlog?.picture_url && (
-            <img src={selectedBlog.picture_url} alt={selectedBlog.title} style={{ width: '100%', maxHeight: 400, objectFit: 'cover', borderRadius: 8, marginBottom: 16 }} />
-          )}
-          <div style={{ lineHeight: 1.7, fontSize: '1.05rem' }} dangerouslySetInnerHTML={{ __html: selectedBlog?.content || '' }} />
-        </DialogContent>
-        <DialogActions sx={{ flexWrap: isSmall ? 'wrap' : 'nowrap', gap: 1 }}>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              const url = window.location.origin + `/blog/${selectedBlog?.id}`;
-              navigator.clipboard.writeText(url);
+      </div>
+
+      {selectedBlog && (
+        <div
+          className="blog-modal-overlay"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem 1rem",
+            background: "rgba(0,0,0,0.75)",
+          }}
+          onClick={closeBlog}
+        >
+          <div
+            className="glass-surface"
+            style={{
+              maxWidth: "900px",
+              width: "100%",
+              maxHeight: "100%",
+              overflow: "auto",
+              borderRadius: "1rem",
+              padding: "1.25rem 1.5rem 1rem",
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            Copy link
-          </Button>
-          <Button fullWidth={isSmall} onClick={closeBlog}>Close</Button>
-          <Button fullWidth={isSmall} onClick={goPrev}>← Prev</Button>
-          <Button fullWidth={isSmall} variant="contained" onClick={goNext}>Next →</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+            <header style={{ marginBottom: "0.75rem" }}>
+              <div className="academia-label">Volume V</div>
+              <h2 style={{ marginBottom: "0.25rem" }}>{selectedBlog?.title || "Untitled Post"}</h2>
+              <small className="text-muted">
+                {selectedBlog?.date && new Date(selectedBlog.date).toLocaleString()}
+              </small>
+              <div className="ornate-divider" aria-hidden="true" />
+            </header>
+            <div style={{ marginBottom: "1rem" }}>
+              {selectedBlog?.picture_url && (
+                <div className="arch-top" style={{ maxHeight: 400, marginBottom: "1rem" }}>
+                  <img
+                    src={selectedBlog.picture_url}
+                    alt={selectedBlog.title}
+                    className="academia-photo"
+                    style={{ maxHeight: 400, objectFit: "cover" }}
+                  />
+                </div>
+              )}
+              <div
+                className="dropcap-intro"
+                style={{ lineHeight: 1.7, fontSize: "1.02rem" }}
+                dangerouslySetInnerHTML={{ __html: selectedBlog?.content || "" }}
+              />
+            </div>
+            <footer
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.5rem",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => {
+                  const url = window.location.origin + `/blog/${selectedBlog?.id}`;
+                  navigator.clipboard.writeText(url);
+                }}
+              >
+                Copy link
+              </button>
+              <button type="button" className="btn" onClick={closeBlog}>
+                Close
+              </button>
+              <button type="button" className="btn" onClick={goPrev}>
+                 Prev
+              </button>
+              <button type="button" className="btn btn-primary" onClick={goNext}>
+                Next 
+              </button>
+            </footer>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

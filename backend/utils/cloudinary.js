@@ -1,15 +1,36 @@
-const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const path = require('path');
 
-// Require a single CLOUDINARY_URL for configuration.
-// Format: cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>
-if (!process.env.CLOUDINARY_URL) {
-  throw new Error(
-    'CLOUDINARY_URL is not set. Please configure CLOUDINARY_URL in your Render environment as cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>'
-  );
+// Ensure uploads folder exists
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// The Cloudinary SDK will auto-read CLOUDINARY_URL from process.env.
-// We only enforce secure URLs.
-cloudinary.config({ secure: true });
+function uploadBuffer(file, folder = 'ibl_project') {
+  return new Promise((resolve, reject) => {
+    try {
+      // Create a unique filename
+      // file.originalname is usually available from multer
+      const ext = path.extname(file.originalname || "image.jpg");
+      const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+      const filepath = path.join(uploadsDir, filename);
 
-module.exports = cloudinary;
+      fs.writeFile(filepath, file.buffer, (err) => {
+        if (err) return reject(err);
+
+        // Return result matching Cloudinary's response structure
+        // secure_url is what the backend expects
+        const localUrl = `/uploads/${filename}`;
+        resolve({
+          secure_url: localUrl,
+          public_id: filename
+        });
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+module.exports = { uploadBuffer };

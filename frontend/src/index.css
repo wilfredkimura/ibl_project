@@ -1,27 +1,37 @@
-/* New palette + font imports per request */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap');
+/* Academia/Classical global fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Crimson+Pro:wght@400;500&family=Cinzel:wght@400;500;600&display=swap');
 
+/* Base tokens mapped to Academia palette */
 :root {
-  /* Provided palette */
-  --first-color: #f0ece2;  /* light background */
-  --second-color: #dfd3c3; /* surface */
-  --third-color: #c7b198;  /* primary */
-  --fourth-color: #596e79; /* dark accent / text */
+  /* Academia palette */
+  --acad-background: #1c1714;      /* Deep Mahogany */
+  --acad-background-alt: #251e19;  /* Aged Oak */
+  --acad-foreground: #e8dfd4;      /* Antique Parchment */
+  --acad-muted: #3d332b;           /* Worn Leather */
+  --acad-muted-foreground: #9c8b7a;/* Faded Ink */
+  --acad-border: #4a3f35;          /* Wood Grain */
+  --acad-accent: #c9a962;          /* Polished Brass */
+  --acad-accent-secondary: #8b2635;/* Library Crimson */
 
-  /* Semantic mapping for existing styles */
-  --ycs-primary: var(--third-color);
-  --ycs-accent: var(--fourth-color);
-  --ycs-hover: #b89f83; /* hover tint for primary */
-  --ycs-dark: var(--fourth-color);
-  --ycs-light: var(--first-color);
-  --ycs-text: var(--fourth-color);
+  /* Backwards‑compatible semantic tokens */
+  --first-color: var(--acad-background-alt);
+  --second-color: #2c241f; /* slightly lighter than backgroundAlt */
+  --third-color: var(--acad-accent);
+  --fourth-color: #f3e8db;
+
+  --ycs-primary: var(--acad-accent);
+  --ycs-accent: var(--acad-accent-secondary);
+  --ycs-hover: #b8953f;
+  --ycs-dark: var(--acad-background);
+  --ycs-light: var(--acad-foreground);
+  --ycs-text: var(--acad-foreground);
 }
 
 /* Global background and text */
 body {
-  background-color: var(--ycs-light);
-  color: var(--ycs-text);
-  font-family: Helvetica, 'Open Sans', Lato, Montserrat, Arial, sans-serif;
+  background-color: var(--acad-background);
+  color: var(--acad-foreground);
+  font-family: 'Crimson Pro', Georgia, 'Times New Roman', serif;
 }
 
 /* Navbar - Brown Theme */
@@ -54,6 +64,33 @@ body {
 }
 .navbar-brown .navbar-toggler-icon {
   filter: invert(90%);
+}
+
+/* Academia-styled navbar links (desktop + mobile drawer) */
+.navbar-link,
+.navbar-drawer-link {
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  color: var(--acad-foreground);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.navbar-link:hover,
+.navbar-drawer-link:hover {
+  background-color: rgba(201, 169, 98, 0.16);
+  color: var(--acad-accent);
 }
 
 /* Admin badge next to brand */
@@ -207,13 +244,92 @@ body,
   margin: 0;
 }
 
+/* Ensure padding and borders don''t cause unexpected overflow */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--ycs-light);
-  color: var(--ycs-text);
+  background-color: var(--acad-background);
+  color: var(--acad-foreground);
   line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Navbar header should always span full viewport width */
+header.glass-surface {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  header.glass-surface {
+    border-radius: 0;
+  }
+}
+
+/* Global content container – centers page columns */
+.container {
+  width: 100%;
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Make media elements responsive by default */
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent cards and glass surfaces from exceeding viewport width */
+.card,
+.glass-surface {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Basic responsive table wrapper; wrap tables in a scrolling container if needed */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  /* Slightly reduce padding/gaps on small screens */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Let centered sections stretch to full width on mobile */
+  .section-centered {
+    align-items: stretch;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
 }
 
 #root {
@@ -262,27 +378,52 @@ a.nav-link:hover {
 
 /* Cards */
 .card {
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 4px;
+  border: 1px solid var(--acad-border);
+  background-color: var(--acad-background-alt);
+  box-shadow: none;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--acad-accent) 50%, var(--acad-border));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* Headings */
+/* Centered section helper for public pages
+   - horizontally centers the main content column
+   - lets the section start just below the navbar
+*/
+.section-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Headings – Academia typography */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: Montserrat, Helvetica, 'Open Sans', Lato, sans-serif;
-  font-weight: 700;
-  color: var(--ycs-accent);
+  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+  font-weight: 500;
+  color: var(--acad-foreground);
+  letter-spacing: -0.02em;
+}
+
+/* Roman numeral / label style */
+.academia-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--acad-accent);
 }
 
 /* Lazy-loaded images */
@@ -373,4 +514,341 @@ footer .text-center p {
   footer .nav-link {
     font-size: 0.85rem;
   }
+}
+
+/* =======================
+   Theme system (dark/light)
+   ======================= */
+
+:root {
+  --theme-transition-duration: 260ms;
+  --theme-transition-easing: ease-out;
+}
+
+body.theme-dark {
+  /* Base colors */
+  --clr-dark-a0: #000000;
+  --clr-light-a0: #ffffff;
+
+  /* Theme primary colors */
+  --clr-primary-a0: #f8e7de;
+  --clr-primary-a10: #f9eae2;
+  --clr-primary-a20: #faece5;
+  --clr-primary-a30: #faefe9;
+  --clr-primary-a40: #fbf2ed;
+  --clr-primary-a50: #fcf4f0;
+
+  /* Theme surface colors */
+  --clr-surface-a0: #121212;
+  --clr-surface-a10: #282828;
+  --clr-surface-a20: #3f3f3f;
+  --clr-surface-a30: #575757;
+  --clr-surface-a40: #717171;
+  --clr-surface-a50: #8b8b8b;
+
+  /* Theme tonal surface colors */
+  --clr-surface-tonal-a0: #252423;
+  --clr-surface-tonal-a10: #393838;
+  --clr-surface-tonal-a20: #4f4e4d;
+  --clr-surface-tonal-a30: #666564;
+  --clr-surface-tonal-a40: #7d7d7c;
+  --clr-surface-tonal-a50: #969595;
+
+  /* Success colors */
+  --clr-success-a0: #22946e;
+  --clr-success-a10: #47d5a6;
+  --clr-success-a20: #9ae8ce;
+
+  /* Warning colors */
+  --clr-warning-a0: #a87a2a;
+  --clr-warning-a10: #d7ac61;
+  --clr-warning-a20: #ecd7b2;
+
+  /* Danger colors */
+  --clr-danger-a0: #9c2121;
+  --clr-danger-a10: #d94a4a;
+  --clr-danger-a20: #eb9e9e;
+
+  /* Info colors */
+  --clr-info-a0: #21498a;
+  --clr-info-a10: #4077d1;
+  --clr-info-a20: #92b2e5;
+}
+
+body.theme-light {
+  /* Base colors */
+  --clr-dark-a0: #000000;
+  --clr-light-a0: #ffffff;
+
+  /* Theme primary colors */
+  --clr-primary-a0: #bfb9a9;
+  --clr-primary-a10: #a8a295;
+  --clr-primary-a20: #918d81;
+  --clr-primary-a30: #7b776d;
+  --clr-primary-a40: #65625b;
+  --clr-primary-a50: #514f48;
+
+  /* Theme surface colors */
+  --clr-surface-a0: #ffffff;
+  --clr-surface-a10: #f0f0f0;
+  --clr-surface-a20: #e1e1e1;
+  --clr-surface-a30: #d3d3d3;
+  --clr-surface-a40: #c5c5c5;
+  --clr-surface-a50: #b6b6b6;
+
+  /* Theme tonal surface colors */
+  --clr-surface-tonal-a0: #f8f8f6;
+  --clr-surface-tonal-a10: #eaeae8;
+  --clr-surface-tonal-a20: #dcdcdb;
+  --clr-surface-tonal-a30: #cececd;
+  --clr-surface-tonal-a40: #c1c1c0;
+  --clr-surface-tonal-a50: #b4b4b3;
+
+  /* Success colors */
+  --clr-success-a0: #1b7f5c;
+  --clr-success-a10: #28be8a;
+  --clr-success-a20: #58dbad;
+
+  /* Warning colors */
+  --clr-warning-a0: #b8871f;
+  --clr-warning-a10: #dfae44;
+  --clr-warning-a20: #ebca85;
+
+  /* Danger colors */
+  --clr-danger-a0: #b13535;
+  --clr-danger-a10: #d06262;
+  --clr-danger-a20: #e29d9d;
+
+  /* Info colors */
+  --clr-info-a0: #1e56a3;
+  --clr-info-a10: #347ada;
+  --clr-info-a20: #74a4e6;
+}
+
+/* Map theme variables into existing semantic tokens */
+body.theme-dark,
+body.theme-light {
+  --first-color: var(--clr-surface-a0);
+  --second-color: var(--clr-surface-a10);
+  --third-color: var(--clr-primary-a30);
+  --fourth-color: var(--clr-primary-a50);
+
+  --ycs-primary: var(--third-color);
+  --ycs-accent: var(--clr-info-a10);
+  --ycs-hover: var(--clr-primary-a20);
+  --ycs-dark: var(--clr-dark-a0);
+  --ycs-light: var(--clr-light-a0);
+  --ycs-text: var(--clr-primary-a50);
+}
+
+body {
+  background-color: var(--clr-surface-a0, var(--ycs-light));
+  color: var(--ycs-text);
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-easing),
+    color var(--theme-transition-duration) var(--theme-transition-easing),
+    background-position 14s ease-in-out;
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(248, 231, 222, 0.18), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(64, 119, 209, 0.18), transparent 55%),
+    linear-gradient(135deg, rgba(37, 36, 35, 0.85), rgba(0, 0, 0, 0.9));
+  background-size: 140% 140%;
+  background-attachment: fixed;
+  animation: ycsGradientDrift 24s ease-in-out infinite alternate;
+}
+
+@keyframes ycsGradientDrift {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  50% {
+    background-position: 30% 10%, 80% 90%, 60% 40%;
+  }
+  100% {
+    background-position: 60% 20%, 60% 80%, 50% 60%;
+  }
+}
+
+/* Glassmorphism surface used across MUI components */
+.glass-surface {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(37, 30, 25, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+body.theme-dark .glass-surface {
+  background: rgba(20, 16, 13, 0.9);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.60),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+body.theme-light .glass-surface {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+/* Academia signature utilities */
+
+/* Arch-topped containers for hero/blog/gallery images */
+.arch-top {
+  border-radius: 40% 40% 0 0 / 20% 20% 0 0;
+  overflow: hidden;
+}
+
+/* Sepia-to-color image treatment */
+.academia-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.6) contrast(0.95) brightness(0.9);
+  transition: filter 700ms ease-out, transform 700ms ease-out;
+}
+
+.academia-photo:hover {
+  filter: sepia(0) contrast(1) brightness(1);
+  transform: scale(1.02);
+}
+
+/* Ornate frame with brass corners */
+.ornate-frame {
+  position: relative;
+  border-radius: 4px;
+  border: 1px solid var(--acad-border);
+  background-color: var(--acad-background-alt);
+}
+
+.ornate-frame::before,
+.ornate-frame::after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--acad-accent);
+  pointer-events: none;
+}
+
+.ornate-frame::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.ornate-frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Ornate section divider with brass glyph */
+.ornate-divider {
+  position: relative;
+  height: 1px;
+  margin: 1.5rem 0;
+  background: linear-gradient(90deg, transparent 0%, var(--acad-border) 20%, var(--acad-accent) 50%, var(--acad-border) 80%, transparent 100%);
+}
+
+.ornate-divider::before {
+  content: "✶";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--acad-accent);
+  font-size: 0.75rem;
+  font-family: 'Cinzel', serif;
+  background-color: var(--acad-background);
+  padding: 0 0.75rem;
+}
+
+/* Drop-cap introduction paragraphs */
+.dropcap-intro {
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.dropcap-intro::first-letter {
+  font-family: 'Cinzel', serif;
+  float: left;
+  font-size: 3.6rem;
+  line-height: 0.8;
+  margin-right: 0.75rem;
+  margin-top: 0.2rem;
+  color: var(--acad-accent);
+  text-shadow:
+    1px 1px 1px rgba(0, 0, 0, 0.4),
+    -1px -1px 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Brass buttons – engraved effect */
+.btn {
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.72rem;
+}
+
+.btn-primary {
+  background-image: linear-gradient(180deg, #d4b872 0%, #c9a962 50%, #b8953f 100%);
+  color: #1c1714 !important;
+  border-color: #b8953f !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  text-shadow:
+    1px 1px 1px rgba(0, 0, 0, 0.4),
+    -1px -1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  filter: brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    0 4px 12px rgba(201, 169, 98, 0.4);
+}
+
+.btn-secondary {
+  background: transparent !important;
+  border: 2px solid var(--acad-accent) !important;
+  color: var(--acad-accent) !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: var(--acad-accent-secondary) !important;
+  border-color: var(--acad-accent-secondary) !important;
+  color: var(--acad-foreground) !important;
+}
+
+/* Atmospheric overlays – to be used via fixed positioned divs in layout */
+.academia-overlay-paper {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+.academia-overlay-vignette {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, transparent 50%, rgba(28, 23, 20, 0.5) 100%);
+  z-index: 0;
 }
